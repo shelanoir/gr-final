@@ -1,0 +1,185 @@
+\documentclass[part1.tex]{subfiles}
+\begin{document}
+
+\section{Hedge algebra}
+\subsection{Definition}
+{\bfseries Linguistic hedge:} a unary operation on linguistic value, changing the linguistic value's meaning.
+\\
+{\bfseries Hedge algebra:} Let \(X\) be a linguistic variable and its domain is \(X = Dom(X)\). A hedge 
+algebra \(AX\) in respect to \(X\) is a 4-tuple \(AX = (X,G,H,\le)\) where G is the set of spanning
+elements, H is the set of hedges and \(\le\) is the sematic ordering relation on X.
+The set G usually has positive, negative and neutral spanning elements. In practice, G usually has only
+positive and negative spanning elements e.g \{True,False\}, \{High, Low\}.\\
+
+A hedge algebra AX satisfies the following  axioms:\\
+{\indent
+	(1) Hedges either increase or decrease the effect of other hedges including itself, and it is 
+then positive or negative w.r.t. the other.\\}
+{\indent
+	(2) If \(u\notin H(v)\) and \(v\notin H(u)\) then \(\forall x\in H(u), x\notin H(v)\) and vice versa. 
+	Furthermore if u and v cannot be compared then so are x,y for all \(x\in H(u), y\in H(v)\).
+}\\
+{\indent
+	(3) \(x \not = hx, x \notin H(hx). h\neq k, hx<kx\) then \(h'hx\le k'kx\forall h,h',k,k'\in
+	H.\) Furthermore, if \(hx \neq kx\) then hx and kx are independent w.r.t. to each other.
+}\\
+{\indent
+	(4) \(u \in v, u \le v\implies u\le hv\) for \(\forall h\) and vice versa.
+}
+\\\\
+(1) means exactly what it says.\\
+(2) means that if two vague concepts are really different, then they form seperated concept categories,
+which means they don't have any common meaning.\\
+(3) means that each hedge has its own meaning and defines its own concept category.\\
+(4) means that a hedge only modifies the vague concept's meaning. It preserves the ordering relation
+of the vague concept's meaning w.r.t. other vague concepts.\\
+\subsection{Properties}
+	{\bfseries Semantic heredity:} When a hedge affects the meaning of a linguistic value, it only
+	increases or decreases a little bit the meaning of that value. The resulting value inherits
+	most of its parent's meaning i.e the parent's comparability is preserved: 
+	if hx \(\le\) kx then H(hx) \(\le\) H(kx). Generally, \(\forall (u,v \in X, 
+	\sigma_1 = h_n..h_1, \sigma_2 = k_m..k_1, h_i,k_j \in H)\), we have:
+	\(u \le v \implies \sigma_1u \le \sigma_2v\)\\
+	{\bfseries Theorem 1:} Let AX = (X,G,H,\(\le\)). The following statements hold:\\
+\indent (1) If x \(\in\) X is a fixed point of an operation h in H, i.e. hx = x, then it is a fixed
+	 point of the others.\\
+\indent (2) If x = \(h_n \cdots h_1 u\), and there exists an index \(i<n\) such that \(h_i \cdots h_1 u\)        is another representation (canonical) of x w.r.t. u and \(h_j x = x, \forall j\ge i\).\\
+\indent (3) For any \(h, k\in H\), if \(hx\le kx\) and \(h\neq k\) then \(hx< kx\).\\
+\indent \(\implies\) The canonical representation of any linguistic value w.r.t. another value is unique.	\\
+\indent {\bfseries Theorem 2:} Let \(x = h_n \cdots h_1 u\) and \(y = k_m \cdots k_1 u\) be two arbitrary
+	canonical representations of x and y w.r.t. u, respectively. Then there exists an index
+	\(j \le min{n, m} + 1\) such that \(h_i = k_i, \forall i < j\), and\\
+\indent (1) \(x < y \iff h_j x_j < k_j x_j , where x_j = h_j-1 \cdots h_1 u\)\\
+\indent (2) \(x = y \iff n = m = j and h_j x_j = k_j x_j\)\\
+\indent (3) x and y are incomparable \(\iff h_j x_j\) and \(k_j x_j\) are incomparable\\
+\indent \(\implies\) This theorem provides us the mean to compare two linguistic value in a hedge 
+algebra. 
+
+\subsection{Linear symmetrical algebra}
+The spanning set G usually has two comparable linguistic values. For example, we have False \(<\) True
+for truth value. A hedge algebra that has only two primitive linguistic values is called a symmetrical
+hedge algebra. The spanning set is denoted \(G = \{c^-, c^+\}, c^+, c^-\) are positive and negative 
+spanning element, respectively.\\\\
+
+The set H of hedges can also be partitioned into two seperated subsets \(H^+ = \{h|hc^+ > c^+\} = 
+\{h|hc^- < c^-\}, H^- = \{h|hc^- > c^-\} = 
+\{h|hc^+ < c^+\}\). Any two hedges in \(H^+\) (or \(H^-\)) are comparable to each other, and each hedge in \(H^+\) is converse to a hedge in \(H^-\) and vice versa. A hedge algebra \(AX = (X,\{c^+,c^-\},H^+\cup
+H^-, \le)\) is linear symmetrical iff \(H^+\) and \(H^-\) are linearly ordered. It is easy to see
+that X is also linearly ordered by \(\le\).\\\\
+
+Let I \(\notin\) H be the {\em identity hedge}: \(\forall x \in X, Ix = x\). I is smaller than any other
+hedge in \(H^+\) and \(H^-\).\\\\
+
+If \(H \neq {\o}, H(c^+), H(c^-)\) are infinite then \(inf(c^+) = sup(c^-) = W, inf(c^-) = 0, sup(c^+) = 1\). W is call the neutral element. We have: \(0<c^-<W<c^+<1\). Denote the linguistic value domain as
+\(\bar X = X \cup \{0,W,1\}\)\\\\
+
+From that we define:
+\begin{itemize}
+\item Let \(x = \sigma c, \sigma \in H^*, c \in \{c^+, c^-\}. y \text{is the negation of x, denoted}
+	y = -x \text{ if } y = \sigma c', \{c,c'\} = \{c^+, c^-\}. -0 = 1, -1 = 0, -W = W\).
+\item \(x,y \in \bar X\) then \(x \wedge y = min(x,y), x \vee y = max(x,y)\)
+\end{itemize}
+
+
+\subsection{Rule of moving hedges}
+\indent (RT1): \(\frac{((P,hu),\sigma <True|False>)} {((P,u),\sigma h<True|False>)}\)
+\\
+\\
+	(RT2): \(\frac{((P,u),\sigma h<True|False>)} {((P,hu),\sigma <True|False>)}\)
+\section{A propositional logic with truth value domain based on LSA}
+\subsection{Syntax}
+\indent {\bfseries The alphabet of logic} consists of the following classes of symbol:\\
+\indent + Propositional symbols: A,B,C \ldots\\
+\indent + Linguistic value symbols: a,b,c \ldots\\
+\indent + Constant symbols: 0,1,W\ldots\\
+\indent + Logical connectives:\(\vee,\wedge,\to,\neg\) \ldots\\
+\indent + Auxiliary symbols: ',', '(', ')'\ldots\\ \\
+{\bfseries Literal:} A string \(A^a\), where \(A\) is a propositional symbol and \(a\) is a truth
+value in \(A\)'s domain.\\\\
+ {\bfseries Formula:}\\
+ \indent + A literal is a formula\\
+ \indent + F is a formula then \( (\neg F\)) is also a formula\\
+ \indent + F and G are formulae then \( (F\vee G), (F\wedge G), (F \to G)\) are also formulae\\
+ \indent + Only strings generated by the above rules are formulae\\
+ \indent ( {\bfseries Precedence of operations:} \(\neg\)  >>  \(\to\)  >>  \(\wedge\)  >>  \(\vee\))\\
+
+\subsection{Semantic}
+\subsubsection{Interpretation}
+An {\bfseries Interpretation} I:\{A = a1\} of the literal \(A^{a2}\) is the mapping associate the formula
+with a value of the truth value domain.\\
+
+{\bfseries Logical connectives' semantics:} let a and b be some linguistic value. Then:\\
+\indent + \(a \vee b = max(a,b)\)\\
+\indent + \(a \wedge b = min(a,b)\)\\
+\indent + \(\neg a = \text{symmetrical value of } a\)\\
+\indent + \(a \to b = max(\neg a,b)\)\\
+\(\implies \wedge\) and \(\vee\) are G{\"o}del's T-norm and T-conorm.\\
+Let T(A) be A's truth value under an arbitrary interpretation.\\
+{\bfseries Truth value of formulae:}\\
+\indent + If A is a literal, T(A) is determined by the interpretation\\
+\indent + Let A and B be two formulae:\\
+\indent \indent (1) \(T(A\vee B) = T(A) \vee T(B)\)\\
+\indent \indent (2) \(T(A\wedge B) = T(A) \wedge T(B)\)\\
+\indent \indent (3) \(T(A\to B) = T(A) \to T(B)\)\\
+\indent \indent (4) \(T(A\neg B) = T(A) \neg T(B)\)
+\\\\
+Let \(T_{I:\{A = a1\}}(A^{a2})\) the value of that interpretation. Then:\\
+\indent + \(T_{I:\{A = a1\}}(A^{a2}) = a1 \wedge a2 \) if a1, a2 \(\ge W\)\\
+\indent + \(T_{I:\{A = a1\}}(A^{a2}) = \neg (a1 \vee a2) \) if a1, a2 \(<\) W\\
+\indent + \(T_{I:\{A = a1\}}(A^{a2}) = \neg a1 \vee a2 \) if a1 \(\ge\) W, a2 \(<\) W\\
+\indent + \(T_{I:\{A = a1\}}(A^{a2}) =  a1 \vee \neg a2 \) if a1 \(<\) W, a2 \(\ge\) W\\
+
+\subsubsection{Satisfiable, unsatisfiable, false}
+{\bfseries Definition:} Let S be a formula, I be an arbitrary interpretation:\\
+\indent + S is false under I if \(T_I(S) < W\)\\
+\indent + S is unsatisfiable if it is contradicted to every interpretation\\ 
+\indent + S is satisfiable if \(\exists I: T_I(S) \ge W\). I is then called a model of S, denoted \(I \models S\)\\
+\indent + S is a tautology if \(\forall I: T_I(S) \ge W\)\\
+\indent \(\implies)\) Collorary: A formula A is a tautology iff \(\neg\)A is unsatisfiable.
+\subsubsection{Logical equivalences. Functional complete set of logical connectives}
+\indent Two formula A abd V are said to be equivalent (\(A \equiv B\)) if A and B have the same \\
+indent truth value for every interpretation I.\\
+\indent Some well-known logical equivalences:
+\begin{align*}
++ A \to B \equiv \neg A \vee B\\
++ A \to B \equiv \neg A \vee B\\
++ A \to B \equiv \neg A \vee B\\
++ A \to B \equiv \neg A \vee B\\
++ A \to B \equiv \neg A \vee B\\
++ A \to B \equiv \neg A \vee B\\
++ A \to B \equiv \neg A \vee B\\
++ A \to B \equiv \neg A \vee B\\
++ A \to B \equiv \neg A \vee B\\
+\end{align*}
+\indent {\bfseries Functionally complete set of logical connectives} is one which can be used to express all possible logical functions \(f:TV^n \to TV\)\\
+
+\subsubsection{Conjunctive normal form}
+A formula expressed as a conjunction of formulae, where these formulae are in turn expressed as
+a disjunction of literal, is said to be in {\em Conjunctive normal form}.\\
+{\bfseries Theorem:} Every formula in our propositional logic is logically equivalent to a CNF
+formula.\\
+Algorithm to transform a formula into its CNF:\\\\
+\indent- Eliminate \(\to\) and \(\leftrightarrow\) :
+\begin{align*}
+	&F \to G \underset{CNF}{\implies} \neg F \vee G\\
+	&F \leftrightarrow G \underset{CNF}{\implies} (\neg F \vee G) \wedge (\neg G \vee F)
+\end{align*}
+\indent- Move \(\neg\) inward: 
+\begin{align*}
+	&\neg (F \vee G) \underset{CNF}{\implies} \neg F \wedge \neg G
+\end{align*}
+\indent- Elimitate double negation:
+\begin{align*}
+	&\neg \neg F \underset{CNF}{\implies} F
+\end{align*}
+\indent- Applying distributivity law:
+\begin{align*}
+	&F \wedge (G \vee H) \underset{CNF}{\implies} (F \wedge G) \vee (F \wedge H)\\
+	&F \vee (G \wedge H) \underset{CNF}{\implies} (F \vee G) \wedge (F \vee H)
+\end{align*}	
+\indent- Rewrite redundant formula:
+\begin{align*}	
+	&F \vee F \underset{CNF}{\implies} F\\
+	&F \wedge F \underset{CNF}{\implies} F
+\end{align*}
+\end{document}

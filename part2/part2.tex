@@ -1,0 +1,313 @@
+\documentclass[../gr-final.tex]{subfiles}
+\begin{document}
+%\subfile{chap1}
+\part{Results}
+\chapter{System Implementation}
+
+\paragraph{} The system in this report is a reasoning system using a
+propositional logic with user-defined linear symmetrical hedge algebra
+as the domain of truth value. The reasoning method to be used is the
+aforementioned Alpha Resolution in the previous part.
+	
+\paragraph{} The main objective of implementing this system is to demonstrate the applicability and feasibility of automated linguistic logic reasoning systems based on linear symmetrical hedge algebra, to design and implement a system for developing knowledge bases capable of capturing fuzzy linguistic 
+concepts, using user-defined LSHA-based truth value domain, as an alternative to traditional fuzzy logic knowledge base.
+
+
+
+\section{Problem Definition}
+
+\paragraph{}Essentially, the problem to be solved by this system is,
+with a user-defined linear symmetrical hedge algebra (LSHA) as a truth value
+domain, a knowledgebase in the form of hedge algebra based
+propositional CNF  clauses, if a user had a proposition of the form
+\(A^{truth-value}\), the system should be able to tell if this
+proposition is true or not, and with as much confidence as it could guarantee.\\
+In addition, the system must also provide the
+functionality to create, update and manage knowledgebase and
+hedge algebra definition. 
+
+\paragraph{}The input of the program is a database describing the hedge algebra to be used, and another database where the knowledge base is stored.\\
+The hedge definition including the tables below:
+\begin{itemize}
+\item A table defining the hedges of the LSHA, containing each hedge's
+  unique name and id.
+\item Two tables for the positive/negative hedges, and their precedence/ranking.
+\item Two tables defining the positive and negative relationships 
+  between hedges.
+\end{itemize}
+
+\paragraph{}The generator terms of the hedge algebras are always True
+and False, so they don't need to be specified in the truth domain's
+definition. There are also two other truth constant: Maxt for the
+maximum truth value, and Mint for the minimum truth value, regardless
+of the set of hedges.\\ 
+
+\paragraph{}The knowledgebase database including:
+
+\begin{itemize}
+\item A table describing disjunctive clauses, including their id and
+  optionally their label. 
+\item A table of literals used in the KB's clauses, with their id,
+  name, and two columns to determine their truth value supscribe: sid
+  is a reference to the table of sequences of hedges, and seed is one
+  of the four generator terms: True, False, Maxt or Mint.
+\item A table describing sequences of hedges, including their id,
+  their ``head'' hedge's id, and their ``tail'' sequences of hedges
+  id, which is a reference to this table itself. 
+\item A table relating clauses with the literals they use, with two
+  columns being reference to clauses table and literals table, respectively
+\end{itemize}
+
+\paragraph{} The Output is either a linguistic truth value, which is
+the confidence of the resolution process on the queried clause, or
+literally a Nothing value if that clause were unprovable.
+
+\section{High level Requirements}
+\subsection{Functional Requirements}
+\begin{itemize}
+\item Enable user defined hedge algebra structure, and allow user to
+  manage the definition of said structure.
+\item Enforcing hedge algebra laws on the user defined hedges
+\item Allow user to use, create and manage fuzzy knowledgebase
+\item Able to answer user's query by proving it
+\end{itemize}
+
+\subsection{Non- Functional Requirements}
+\begin{itemize}
+\item Acceptable performance
+\item Easy to use
+\end{itemize}
+
+\subsection{Quality Attributes}
+
+\paragraph{Correctness:}
+The reasoning process must be {\em sound} and {\em complete}.
+
+\paragraph{Maintainability:}
+The system should be easy to maintain and extend
+
+\section{System configuration}
+
+\paragraph{}The programming language being used is Haskell, a purely functional programming language. The particular implementation of Haskell used for this system is the Glasgow  Haskell Compiler v.7.4.2 on Linux.
+
+\paragraph{}The database management system of choice is the lightweight embedded DMBS SQLite3. 
+
+\paragraph{}The system also makes use of some external Haskell libraries: 
+
+\begin{itemize}
+\item HDBC, the Haskell Database Connectivity library
+\item HDBC.SQLite3, SQLite3's backend for HDBC. This library implies
+  the presence of Sqlite3.
+\item Readline, for a little better I/O in the
+  commandline mode. Likewise this library also requires readline
+  already on the system
+\item Template Haskell, a metaprogramming library for Haskell
+\item SelfRestart, a very small library providing the ability for a
+  process to restart itself. Unlike other library mentioned here, this
+  one is included in the source of the program so there's no need to
+  install it beforehand.
+\item ... and some other libraries, all of them should be installed
+  along with the default Haskell Platform 
+\end{itemize}
+
+
+
+\section{System Design}
+\subsection{Database Design}
+
+\subsubsection{Entity-Relationship diagram}
+\includegraphics[scale=0.45]{part2/ERDiagram}
+
+\subsubsection{Database schema}
+\paragraph{}
+\includegraphics[clip=true, trim = 90 0 0 0,
+scale=0.8,page=1]{part2/DataModel}
+\paragraph{}
+\includegraphics[clip=true, trim = 90 200 0 0,
+scale=0.8,page=2]{part2/DataModel}
+\paragraph{hedges and positive/negative tables:}
+The hedges table containing all hedges that was defined in the database, but
+in actuallity the system will only consider those actually present in
+the positive and negative tables, since any hedge must either be
+positive or negative, but can't be neither.\\
+The system also prevents users from adding a hedge to both tables, to
+guarantee that a hedge would not be both positive and negative.\\
+The precedence column in these tables indicate the order of hedge, the
+smaller the precedence the stronger the hedge is w.r.t. other hedge in
+the same list.
+\paragraph{positive/negative relation:}
+The user is also restricted to only modify one of these two tables at
+a time, since doing both would likely to result in conflicts: remember
+that a hedge is either positive or negative to {\em every} other
+hedges. 
+Once a table is updated, the other table is recalculated and updated
+by the system to preserve hedge algebra's consistency.
+\paragraph{Clauses and literals:}
+These are pretty much just like described in the {\em Problem
+  Definition} section. The system would automatically insert new
+literals as necessary when updating clauses, or adding new
+clauses. Literals can be reused, and appeared in many different
+clauses at once. 
+\paragraph{hstring:}
+This table is actually a linked list data structure representing
+the sequence of hedge in a truth value. Each ``sequence'' has its id,
+its ``head'' (a hedge id) and its ``tail'', which is a reference to
+its subsequence. Many different sequences can share the same
+subsequence.\\
+Every literal has a reference to a hstring id, which is the ``hedge'' part
+of its truth value.
+\subsection{Use cases}
+
+\subsubsection{Use cases diagram}
+\includegraphics[scale=0.85]{part2/UsecaseDiagram}
+
+\subsubsection{Use cases specification}
+{\huge //TODO}
+
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=1]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=2]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=3]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=4]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=5]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=6]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=7]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=8]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=9]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=10]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=11]{part2/UCdesc}
+%\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=12]{part2/UCdesc}
+
+
+\section{Architectural design}
+\subsection{Modular Decomposition}
+\includegraphics[scale=0.78]{part2/Modules}
+\paragraph{} Reflecting the specification, the system is decomposed
+into different groups of modules, each solving a relatively logically separated
+concern:
+\begin{itemize}
+\item {\bfseries Hedge Algebra implementation concerns:} dealing with
+  the implementation of this particular mathematical structure, and
+  its runtime instantialization based on user's definition. This
+  group consists of HedgeClass module and the modules in HedgeGen:
+  Hgen and Ahedge.
+\item {\bfseries Linguistic Propositional Logic implementation concerns:} dealing
+  with the implementation and representation of the aforementioned
+  propositional logic. This group is dependent on the previous group's
+  HedgeClass module. There are two modules in this group: HedgeTruth
+  and ProsLogic.
+\item {\bfseries Hedge definition management concerns:} dealing with the creation
+  and management of user-defined hedge algebra, which is one of the
+  main functionalities of the system. Hio is the only module in this
+  group. 
+\item {\bfseries KnowlegeBase management concerns:} dealing with the
+  creation and management of knowledgebase, which is also one of the
+  main functionalities of the system. KBio is the only module here.
+\item {\bfseries Automated reasoning concerns:} dealing with the
+  reason-to-exist of the system: implementation of automated reasoning
+  on linguistic logic using Alpha Resolution. This is the main
+  functionalities of this system. The module in this system is,
+  accordingly, AlphaResolution.
+\end{itemize}
+\subsubsection{Module HedgeClass}
+
+\paragraph{}This module defines the Ha (short for Hedge algebra) typeclass, which is used as a basis for  actual hedge algebra. An instance Hedge of Ha (i.e. is the type for linguistic hedges) must define:
+
+\begin{itemize}
+\item A list of all linguistic hedges in the type Either a list of all
+  positive hedges or a list of all negative hedges, or both list
+\item  Either a positive relationship matrix, or a negative relationship
+  matrix
+\end{itemize}
+
+\paragraph{}The Ha typeclass will accordingly generate:
+
+\begin{itemize}
+\item Operator <+> and <-> e.g. Very <+> Less = True means Very is
+  positive w.r.t. Less, Less <-> Possibly = True means Less is
+  negative w.r.t. 
+\item Possibly Predicate positive and negative: Hedge ->
+  Bool Comparing function compare': Hedge x Hedge -> LT | EQ | GT
+\end{itemize}
+
+\paragraph{}The HedgeClass module exports the typeclass Ha.
+
+\subsubsection{Module HedgeTruth}
+
+
+\paragraph{}This module defines the parametric type Truth. Given a type Hedge that is an instance of Ha, this parametric type will construct an actual linear symmetrical hedge algebra, with two generators: Tru being the positive one, Fals being the negative one. \\
+
+\paragraph{}As an instance of the typeclass Ord, the compare function for Truth is also defined in this module, and is used as a basis for defining logical connectives for linguistic truth value.\\
+
+\paragraph{}This module depends on the HedgeClass module, exports the type Truth, and the following functions:
+
+\begin{itemize}
+\item isHTrue, isHFalse: test whether if a truth value has True or
+  False tendency 
+\item andH, orH, notH: and, or and not counterparts for
+  linguistic truth value 
+\item operator (><): test whether if two linguistic
+  truth value has opposite tendency or not
+\end{itemize}
+
+
+\subsubsection{Module ProsLogic}
+
+\paragraph{}The representations for literals and clauses of the propositional language are defined here. It exports the Lit and CNF types and their type accessors/constructors. This module depends on the two modules HedgeClass and HedgeTruth.
+
+
+\subsubsection{Module AlphaResolution}
+
+\paragraph{}The implementation of Alpha Resolution method and its auxiliary functions are defined in this module. This resolution function takes a set of clauses and performs Alpha Resolution on it. The returned value is of the type Maybe (Truth hedge), where it can be Nothing if the resolution didn't entail the null clause, or Just <truth value> if it did.\\
+
+\paragraph{}This module depends on HedgeClass, HedgeTruth and ProsLogic modules and exports the resolution procedure.
+
+\subsubsection{Component HedgeGen}
+
+\subparagraph{Module Hgen:} This module generate the declaration for the Hedge type
+according to the description in the hedge database. Hedge will be an
+instance of Ha, and this module will export this declaration.\\
+To preserve type safety, Template Haskell requires that the declaration
+generation and the actual declaration must be in two different
+modules, so there must be another module to generate the actual Hedge type.\\
+This module depends on the libraries Template Haskell, HDBC,
+HDBC.SQLite3, the module Hio and using utilities from UtilB.\\
+\subparagraph{Module Ahedge:} This is where the actual hedge type is
+generated. This module just simply generates the type, and exports it
+to the outside world.
+
+\subsubsection{Component DatabaseIO:}
+\subparagraph{Module Hio:} This module handles the operation on the
+hedge definition tables in the database. It uses HDBC and
+HDBC.Sqlite3, SelfRestart and module UtilB.
+\subparagraph{Module KBio:} This module handles the operations on the
+knowledge base DB. It depends on the libraries HDBC, HDBC.SQLite3 and UtilA, and exports the read, update and delete procedures.
+\subsubsection{Component Utils:}
+\paragraph{} Because there are both some utility functions that are useful
+both before and after the Hedge type is generated, and some other
+utility functions that can only be meaningful after the generation of
+that type, there are accordingly two utility providing modules: UtilB
+for the former, and UtilA for the latter.
+\subparagraph{Module UtilB:} This module provides some small utility
+functions that don't depend on the presence of a Hedge type
+\subparagraph{Module UtilA:} Likewise, but dependent on the presence of
+type Hedge. It also reexport a bunch of other modules: Ahedge,
+ProsLogic, AlphaResolution, Hio, SelfRestart and also UtilB itself.
+
+\subsubsection{Module Main}
+
+\paragraph{}This module is in charge of user interaction. The main
+loop is defined here.
+\section{System Implementation}
+
+{\huge //TODO}
+\subsection{Module HedgeClass}
+\subsection{Module Hgen and Module Ahedge}
+\subsection{Module HedgeTruth}
+\subsection{Module ProsLogic}
+\subsection{Module AlphaResolution}
+\subsection{Module Hio}
+\subsection{Module KBio}
+\subsection{Module UtilA and Module UtilB}
+\subsection{Module Main}
+
+\end{document}

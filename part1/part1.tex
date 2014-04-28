@@ -1,0 +1,41 @@
+\documentclass[../gr-final.tex]{subfiles}
+\begin{document}
+\part{Problem definition, Background theory and Implementation Approaches}
+\chapter{Introduction}
+{\huge //TODO}
+\section{Hedge Algebra and Fuzzy logic}
+\subsection{Traditional fuzzy logic}
+\subsection{Linguistic hedge}
+\subsection{Hedge Algebra: an approach to linguistic hedge and
+  linguistic logic reasoning}
+\section{Problem Definition}
+\chapter{Theoretical Background}
+
+\subfile{part1/sec2-1.tex}
+\subfile{part1/sec2-2.tex}
+
+\chapter{Implementation Approaches} 
+\section{Functional Programming paradigm}
+{\huge //TODO}
+%\subsection{}
+%\subsection{}
+\section{Software architecture}
+\subsection{Self-contained application} The system is self-contained,
+not dependent on the services of any other software component (save
+for the operating systems), and does not provide services for any
+other software component. 
+\subsection{Database-centric architecture} The system is data-centric
+in nature, makes use of a database management system (an embedded DBMS
+instead of a DBMS server in this case, to make the application
+self-contained).
+\subsection{Rule-based system} To be more precise, this system is a
+platform for both creating knowledgebase and reasoning using the knowledgebase.
+
+\section{Data Modeling Methodology}
+\paragraph{Top-down data modeling: } Top-down data modeling methodology enforces that the
+design decision of data model is made before the actual
+implementation, and the implementation must proceed accordingly. For a
+reasoning system like this, its entities and their relationships can
+be made quite obvious with just a little upfront thinking, so it is
+very appropriate to use top-down methodology.
+\end{document}
