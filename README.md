@@ -1,4 +1,4 @@
-GR-report
-=========
-
-Graduation Research reports
+=======================
+GR final report
+a.k.a Graduation Thesis
+=======================
