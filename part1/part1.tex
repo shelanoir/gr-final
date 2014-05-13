@@ -15,8 +15,166 @@
 \subfile{part1/sec2-2.tex}
 
 \chapter{Implementation Approaches} 
+\paragraph{} The first section is a brief description of the
+programming paradigm of choice for this implementation. Although
+brief, this is still the longest section of this chapter since
+it has the most major influences in other design decisions.\\
+The next two sections are about the overall architecture of the
+program, which influent how to decomposed and arrange components
+of the programs.\\
+The last section is about the data modeling methodology of this
+implementation. 
 \section{Functional Programming paradigm}
-{\huge //TODO}
+%{\huge //TODO}
+\paragraph {Functional programming}is a programming paradigm where
+programs are executed by evaluating expressions, in contrast with
+imperative programming where programs are composed of statements
+which change global state when executed. Functional programming
+typically avoids using mutable state. 
+\paragraph {Functional programming is {\it{\bfseries pure}}}iff every function being used is a pure function, i.e
+its returned value only depends on its parameters, and does not
+depend on any mutable state. Functions in purely functional
+programming are the same as mathematical functions, in fact the
+denotational semantics of functions in a purely functional
+programming language is simply its equivalent mathematical function.
+\paragraph {Features of purely functional programming}including but not
+necessarily limited to:
+\begin{itemize}
+       \item {\bfseries Declarative: } Functional programming is
+               about specifying what the computation is, not how
+               to compute the computation.
+       \item {\bfseries First class and higher order functions: }
+               Functions being first class means that functions
+               are just another type of data: one can bind them
+               to variables, pass them to other function,
+               return them from other function, create them on
+               the fly or use them to
+               define new data type. Higher order functions are
+               functions that take functions as parameters or
+               return new function. The presence of higher order 
+               functions implies first-class status of functions.
+       \item {\bfseries Referential transparency: } When every
+               expression is not dependent on state, one can
+               subtitute an expression with its equivalent, or
+               even reorder expressions and still preserve the
+               program's semantics.
+       \item {\bfseries Liberty of evaluation strategy/order: }
+               Programs can be evaluated in any order without
+               affecting its semantics, contrary to imperative
+               programming where statements must be evaluated in
+               order. 
+       \item {\bfseries Expressive type system: } While type
+               system is a no-brainer in any modern language,
+               the most advanced state-of-the-art type systems
+               are most usually developed along side with
+               functional languages. 
+       \item {\bfseries Automatic memory management: } Obsolete
+               memory references are handled by the garbage
+               collector. This helps eliminate a large class of
+               hard to debug runtime errors. Function being first
+               class actually requires automatic memory
+               management: an inner function can refer to a
+               variable of an outer function, and this inner
+               function can be bind to a variable that can exist
+               beyond the extent of the outer function. So the
+               ``free'' reference in the inner function must also live
+               beyond its defining function. Manual memory
+               management is impossible within this scenary.
+       \item {\bfseries Explicit side effects and seperation of
+               pure and IO code: } A computer program after all
+               still has to perform effectful computation to be
+               useful. Purely functional languages provide side
+               effects like IO without breaking purity by {\it
+               lift} effectful computations into a different
+               context, completely seperated from the
+               ``workhorses'' pure functions that do (almost) all
+               the computation, so that IO code can never change
+               behaviors of pure code. This explicitness actually
+               makes debugging both computing code and IO code much 
+               easier than in imperative languages, since they
+               are completely decoupled: a function that
+               generates correct results given a specific input
+               will always do so, and input/output values are fine as
+               long as they are right: there's no way that after reading
+               from a file for example a function would return different 
+               result than it did before.
+\end{itemize}                
+\paragraph {}Benefits of those features including:
+\begin{itemize}
+        \item {Declarativeness} makes program more abstract and actually
+          resembles mathematical formulae. This is a big plus for
+          project like this one, where the main task is to
+          implement mathematical constructs    
+        \item {Higher order functions} makes
+                programs more modular and elevates code reuse,
+                since higher order functions can easily capture
+                recurring patterns of computation. Programming
+                with higher order function leads to much more
+                succint programs.
+        \item {Referential transparency} enables many kinds of
+                otherwise impossible automatic
+                transformation/optimization of programs. This is
+                more of an interest for compiler implementors,
+                but referential transparency also enables 
+                {\it equational reasoning}. By
+                subtituting expressions without breaking the
+                program's semantics, one can perform reasoning
+                about programs much like about other kinds of
+                algebraic expressions. This makes proving
+                program's properties actually viable. Sometimes
+                one can even use equational reasoning to derive
+                valid program from specification.\\
+                Referential transparency also helps with a
+                program's reliability: once a function is
+                demonstrated to be correct, it is assured to be correct and
+                will never do anything unexpected because of some
+                unforeseeable global change of state.                
+        \item Liberty of evaluation strategy/order's benefits are
+                twofold. On the one hand, that means
+                parallelization is much more feasible with
+                functional programs, since expressions can be
+                in any orders, including {\it many at the same
+                times}. On the other hand (and this is the more
+                relevant benefits for this project), it enables
+                the use of lazy evaluation: value will only be
+                evaluated as needed, and evaluated value will
+                be cached for later use. While this can increase
+                perfomance, the more important application is {\it
+                infinite data structures} - this helps
+                programmers have more freedom and can increase
+                expressiveness a whole lot.              
+       \item An expressive type system provides various kinds of
+               polymorphism, catches various errors at compile
+               time more effectively than other conventional type
+               system, and makes modeling mathematical structures
+               natural.\\
+               The last point is worth emphasized for its
+               direct relevance to this thesis. Functional type
+               system usually provides {\it algebraic data type}
+               as a basic type defining method. It can be thought
+               of as a unification of record type, union type and
+               parametric type: a data type can have many forms,
+               each form can have many fields, each field can
+               recursively have the same type as the defined
+               type, and the types of fields can be {\it type
+               variables}, which means a type can be
+               parametrically polymorphic. In addition with a way
+               to define (overload) common operations amongs
+               different types, e.g Haskell's {\it type class}, this
+               leads to a natural way of expressing mathematical
+               structures in programs.  For example, as we know
+               the set of natural numbers and the set of real
+               numbers can both form a group over identity 0 and
+               operation (+). To express this in for example
+               Haskell, one would define a Group type class that
+               requires definition of the identity and the
+               operation. Then natural numbers, real numbers or
+               any other type possibly be a group in a
+               mathematical sense can be a Group, just by
+               providing the two requirements.
+       \item The last two mentioned features, as discussed,
+               simply help programs less errorneous in general.        
+\end{itemize}                
 %\subsection{}
 %\subsection{}
 \section{Software architecture}
