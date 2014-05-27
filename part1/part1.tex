@@ -2,19 +2,155 @@
 \begin{document}
 \part{Problem definition, Background theory and Implementation Approaches}
 \chapter{Introduction}
-{\huge //TODO}
+\paragraph{} This chapter presents the motivations for 
 \section{Hedge Algebra and Fuzzy logic}
 \subsection{Traditional fuzzy logic}
-\subsection{Linguistic hedge}
-\subsection{Hedge Algebra: an approach to linguistic hedge and
-  linguistic logic reasoning}
-\section{Problem Definition}
+\paragraph{} More than just a tool for communication, natural
+languages are also the framework we use to express our
+understanding of the world, to think about it, to analyse it, reason about it
+and to make decisions. By nature, natural languages are
+vague, imprecise and qualitative. To model the thinking process
+of our own using formal languages, we need a tool to capture this
+``fuzziness'' property. Motivated by this, fuzzy sets theory and
+fuzzy logic was founded in 1965 by Zadeh and since then has been
+extensively developed. 
+\paragraph{} Fuzzy logic deals with approximate reasoning, in
+constrast to classical logic. The truth value domain is not the
+binary set \{True, False\} or \{1,0\}, but rather between completely
+false and completely true, i.e the whole {\em interval} [0,1], or
+as we shall see, a range of {\em linguistic truth values}, whose
+values are actually labels for the underlying numerical values.
+\paragraph{} From fuzzy sets theory and fuzzy logic,
+several new possibilities were unfolded for both research
+directions and real world applications in various areas,
+especially artificial intelligence. While fuzzy sets theory is
+undoubtably a very fruitful approach for handling vagueness
+and uncertainty in human's reasoning, however just that alone is
+not enough to model linguistic reasoning, in other words, how we
+human actually {\em think}. To achieve that end, we need some
+extension to plain fuzzy sets theory, namely {\em linguistic
+variables} and {\em linguistic hedges}
+\subsection{Linguistic variables and linguistic hedges}
+\paragraph{} In his exploration for a framework to model human's
+reasoning process, Zadeh introduced the concept of {\em linguistic
+variable}$^{\text {citation needed}}$ in 1975. A linguistic
+variable is a variable whose values are linguistic, e.g tall,
+short, very-tall, approximately-tall, possibly-not-very-short...
+rather than numerical. These linguistic values are mapped to a
+numerical value in the interval [0..1] by a {\em compatibility
+function}. A typical linguistic value involves one of the {\em
+primary terms} (e.g. tall and short), whose meaning are
+subjective and context dependent.
+\paragraph{} Furthermore, linguistic values of a linguistic
+variables are generated from primary terms using {\em linguistic
+hedges}. Formally linguistic hedges are unary function that
+modify the meaning of their argument in a specified,
+context-independent way.
+\paragraph{} This concept of linguistic variables provides a
+basis for approximate reasoning - a reasoning that is apparently
+qualitative and is neither too exact nor too inexact, which has
+been proven to be an effective approach to model human's
+reasoning. However as we noticed, linguistic variables are still
+numerical in nature, and hedges are also just numerical
+functions. As we shall see, using numerical values to model
+human's linguistic reasoning comes with its own limitations as
+well, and hedge algebra is a viable approach to address these
+limitations.
+\subsection{Hedge Algebra: an approach to domains of linguistic
+variables}
+\paragraph{} As mentioned above, Zadeh's approach to linguistic
+variables and linguistic hedges has its own shortcomings:
+\begin{itemize}
+        \item It is easy to observe that one can compare
+                lintuistic terms based on their intuitive meaning. For
+                example, it's clear that true $\ge$ false, or
+                true $\ge$ approximately true, or true $\ge$
+                very$^n$ approximately true, for any natural
+                number n. Embedding linguistic values domain into
+                [0..1] however does not respect this order, since
+                hedges are just interpreted as functions on
+                numerical values, while naturally a linguistic
+                hedge can have different behavior when applies to
+                different linguistic terms. For example, intuitively
+                possibly true is just ``perhaps true'', but less
+                possibly true weakens the ``perhaps'' part, which
+                makes less possibly true $\ge$ possibly true. But
+                less true is definitely less than true. Zadeh's
+                hedges just simply failed to capture this
+                intuitive ordering of linguistic values.
+        \item With Zadeh's linguistic variables, we actually have
+                no ways to directly manipulate linguistic terms,
+                since what we have are just labels being assigned
+                with numerical values.                                 
+\end{itemize}
+\paragraph{} Because linguistic terms in fact have a natural ordering, and we
+need a way to directly manipulate linguistic terms as
+mathematical objects in their own right, it would be much better
+if we had an algebraic structure that can model linguistic terms
+instead of embedding them into the interval [0..1]. To this end,
+in 1990 Nguyen Cat Ho and Wolfgang Wechler$^{\text{citation
+needed}}$ presented {\em Hedge algebra}, an algebraic structure
+that provides exactly the aforementioned needs.
+\paragraph{} With hedge algebra, not only we can now directly manipulate
+linguistic values, but also automated reasoning can be performed
+directly on linguistic values without having to map them into
+numerical values. This is without a doubt a very powerful approach 
+to computationally model the way human reason, and since hedge
+algebra was first presented the researches on automated reasoning
+using hedge algebra as truth domain has been substantial, notably
+in$^{{\text citation and citation needed}}$.
+\paragraph{}
+Very recently a new and promising reasoning method on a specific
+subclass of hedge algebra called Linear Symmetrical Hedge Algebra
+(LSHA) - the $\alpha$-Resolution method, has been published.
+Currently there is no known implementation of this reasoning
+method, and as will be discussed in the next section, that will
+be one of the motivation for this thesis.
+
+\section{Objectives of the thesis}
+\subsection{The problem} On the one hand, there are many extensive researches with
+impressive results on automated reasoning with hedge algebra, but
+on the other hand, there haven't been many actual automated
+reasoning systems applying these results. For an interested but
+otherwise unconvinced person, this lack of implementations may raise several
+questions: 
+\begin{itemize}
+        \item Is implementing automated reasoning with hedge
+                feasible, or is it actually very hard to do in
+                practice and only sounds good on paper?
+        \item Is it an effective approach for modeling
+                human's reasoning, i.e can it really reason with
+                linguistic terms like we humans do?
+        \item Can we apply this to solve any practical problem,
+                or is this just of purely theoretical interest?
+\end{itemize}
+\subsection{Objectives} This thesis seeks to change this situation, by
+providing an implementation of an automated reasoning system on
+fuzzy logic with LSHA as its truth domain. In particular,
+the system will use the aforementioned $\alpha-Resolution$ to show that
+this specific method is feasible and effective, and in turn to
+show that automated reasoning with hedge algebra can be feasible
+and effective in general. To make a point of
+applicability, the system will be designed to use in
+knowledge-based systems.
+\subsection{Overview of the rest of the thesis}
+Chapter 2 constitutes the foundation of this
+whole thesis, including the theory and intuitions behind hedge
+algebra, the propositional fuzzy logic with LSHA as its truth
+domain, resolution and $\alpha-Resolution$ reasoning methods on
+this logic.\\
+Chapter 3 addresses the methodological approaches to achieve the
+objectives of this thesis.\\
+Chapter 4 deals with the design and implementation details of the
+system.\\
+Chapter 5 briefly summarizes the whole thesis, discusses its
+limitations and directions for further researches.
 \chapter{Theoretical Background}
 
 \subfile{part1/sec2-1.tex}
 \subfile{part1/sec2-2.tex}
 
-\chapter{Implementation Approaches} 
+\chapter{Methodological Approaches} 
 \paragraph{} The first section is a brief description of the
 programming paradigm of choice for this implementation. Although
 brief, this is still the longest section of this chapter since

@@ -1,5 +1,6 @@
 \documentclass[../gr-final.tex]{subfiles}
 \begin{document}
+\lstset{language=Haskell}
 %\subfile{chap1}
 \part{Results}
 \chapter{System Implementation}
@@ -180,7 +181,9 @@ of its truth value.
 
 \section{Architectural design}
 \subsection{Modular Decomposition}
-\includegraphics[scale=0.78]{part2/Modules}
+\includegraphics[scale=0.78]{part2/_Modules}
+\paragraph{}
+\includegraphics[width=450pt, height=600pt]{part2/Modules}
 \paragraph{} Reflecting the specification, the system is decomposed
 into different groups of modules, each solving a relatively logically separated
 concern:
@@ -188,20 +191,27 @@ concern:
 \item {\bfseries Hedge Algebra implementation concerns:} dealing with
   the implementation of this particular mathematical structure, and
   its runtime instantialization based on user's definition. This
-  group consists of HedgeClass module and the modules in HedgeGen:
+  group consists of HedgeClass module and the modules in Hedgen:
   Hgen and Ahedge.
 \item {\bfseries Linguistic Propositional Logic implementation concerns:} dealing
   with the implementation and representation of the aforementioned
   propositional logic. This group is dependent on the previous group's
   HedgeClass module. There are two modules in this group: HedgeTruth
   and ProsLogic.
-\item {\bfseries Hedge definition management concerns:} dealing with the creation
-  and management of user-defined hedge algebra, which is one of the
-  main functionalities of the system. Hio is the only module in this
-  group. 
-\item {\bfseries KnowlegeBase management concerns:} dealing with the
-  creation and management of knowledgebase, which is also one of the
-  main functionalities of the system. KBio is the only module here.
+\item {\bfseries Database interaction concerns:} dealing with
+        database operations, which furtherly decomposed into:
+        \begin{itemize}
+          \item {\bfseries Hedge definition management concerns:}
+                  dealing with the creation and management of
+                  user-defined hedge algebra, which is one of the
+                  main functionalities of the system. Hio is the
+                  only module in this group. 
+          \item {\bfseries KnowlegeBase management concerns:}
+                  dealing with the creation and management of
+                  knowledgebase, which is also one of the main
+                  functionalities of the system. KBio is the only
+                  module here.
+        \end{itemize}
 \item {\bfseries Automated reasoning concerns:} dealing with the
   reason-to-exist of the system: implementation of automated reasoning
   on linguistic logic using Alpha Resolution. This is the main
@@ -234,9 +244,16 @@ concern:
 \subsubsection{Module HedgeTruth}
 
 
-\paragraph{}This module defines the parametric type Truth. Given a type Hedge that is an instance of Ha, this parametric type will construct an actual linear symmetrical hedge algebra, with two generators: Tru being the positive one, Fals being the negative one. \\
+\paragraph{}This module defines the parametric type Truth. Given
+a type Hedge that is an instance of Ha, this parametric type will
+construct an actual linear symmetrical hedge algebra, with two
+generators: Tru being the positive one, Fals being the negative
+one. \\
 
-\paragraph{}As an instance of the typeclass Ord, the compare function for Truth is also defined in this module, and is used as a basis for defining logical connectives for linguistic truth value.\\
+\paragraph{}As an instance of the typeclass Ord, the compare
+function for Truth is also defined in this module, and is used as
+a basis for defining logical connectives for linguistic truth
+value.\\
 
 \paragraph{}This module depends on the HedgeClass module, exports the type Truth, and the following functions:
 
@@ -261,7 +278,7 @@ concern:
 
 \paragraph{}This module depends on HedgeClass, HedgeTruth and ProsLogic modules and exports the resolution procedure.
 
-\subsubsection{Component HedgeGen}
+\subsubsection{Component Hedgen}
 
 \subparagraph{Module Hgen:} This module generate the declaration for the Hedge type
 according to the description in the hedge database. Hedge will be an
@@ -275,13 +292,13 @@ HDBC.SQLite3, the module Hio and using utilities from UtilB.\\
 generated. This module just simply generates the type, and exports it
 to the outside world.
 
-\subsubsection{Component DatabaseIO:}
+\subsubsection{Component DBio:}
 \subparagraph{Module Hio:} This module handles the operation on the
 hedge definition tables in the database. It uses HDBC and
 HDBC.Sqlite3, SelfRestart and module UtilB.
 \subparagraph{Module KBio:} This module handles the operations on the
 knowledge base DB. It depends on the libraries HDBC, HDBC.SQLite3 and UtilA, and exports the read, update and delete procedures.
-\subsubsection{Component Utils:}
+\subsubsection{Component Util:}
 \paragraph{} Because there are both some utility functions that are useful
 both before and after the Hedge type is generated, and some other
 utility functions that can only be meaningful after the generation of
@@ -299,15 +316,540 @@ ProsLogic, AlphaResolution, Hio, SelfRestart and also UtilB itself.
 loop is defined here.
 \section{System Implementation}
 
-{\huge //TODO}
 \subsection{Module HedgeClass}
-\subsection{Module Hgen and Module Ahedge}
+
+\subsubsection{Import and Export:}
+
+\begin{lstlisting}
+module HedgeClass (
+        Ha(..),
+) where
+import Data.List
+\end{lstlisting}
+
+\subsubsection{Description} Definition for the general LSHA mathematical
+structures. Export Ha typeclass and all of its methods.
+\subsubsection{Hedge typeclass}
+\begin{lstlisting}
+class (Eq a,Ord a,Enum a,Show a,Read a) => Ha a where
+\end{lstlisting}
+
+\paragraph{} A type class of linear symmetrical hedge algebras. This type
+class captures the abstract algebraic structure of every LSHA,
+but omits the positive and negative spanning terms and leaves
+them to the logic definition to decide.\\
+
+\emph{Properties:}
+\begin{enumerate}
+        \item h `elem` hedgeLs => h `elem` posLs OR h `elem` negLs
+        \item h, k `elem` posLs/negLs => h >= k OR k >= h
+        \item h, k `elem` hedgeLs => h <+> k OR h <-> k
+\end{enumerate}
+\paragraph{}
+\emph{Methods}
+
+\begin{enumerate}
+        \item hedgeLs :: [a] - List of every hedge in the structure
+
+        \item posLs :: [a]\\
+        List of positive hedges
+
+        \item negLs :: [a]\\
+           List of negative hedges
+
+        \item  positive :: Ha a => a -> Bool\\
+           Test for the positivity of a hedge
+
+        \item  negative :: Ha a => a -> Bool\\
+          Test for the negativity of a hedge
+
+        \item  allRel :: [(a, a)]\\
+          Every relations in the structures. This list is used in the
+          construction of the lists of positive and negative relations.
+        \item  posRel :: [(a, a)]\\
+          List of positive relations between hedges
+
+        \item  negRel :: [(a, a)]\\
+          List of negative relations between hedges
+
+        \item  (<+>) :: a -> a -> Bool\\
+          isPositive operation: h <+> k iff h is positive w.r.t k
+        \item  (<->) :: a -> a -> Bool\\
+          isNegative operation: h <-> k iff h is negative w.r.t k
+        \item  compare' :: a -> a -> Ordering\\
+          Generic comparing function for the structure. This is used in
+          the Ord instance declaration of the structure
+\end{enumerate}
+Instances Ha Hedge defined in {\bfseries Ahedge}
+
+\subsection{Module Hedgen.Hgen}
+\subsubsection{Import and Export:}
+
+\begin{lstlisting}
+module Hedgen.Hgen  (
+        q,
+) where
+import Language.Haskell.TH
+import System.Console.Readline
+import System.Environment
+import Database.HDBC
+import Database.HDBC.Sqlite3
+import Util.UtilB
+import DBio.Hio
+import System.Directory(doesFileExist)
+import Control.Monad
+import Control.Exception
+import SelfRestart(ExitCode(..),selfRestart,exitImmediately)
+import Data.Char(toLower) 
+\end{lstlisting}        
+\subsubsection {Description} Generating a Hedge {\em declaration generator} from input knowledge
+base's definition. The generator is exported to module Ahedge and
+the Hedge is defined there.\\
+This is also the first entry point of the program: while the sole
+purpose is just to generate the declaration for Hedge, this
+module will also take care of the case when the knowledge base is
+not initialized, or there is no hedge definition in the knowledge
+base.
+\subsubsection{Hedge generator:}
+\begin{lstlisting}
+q :: Q [Dec]
+\end{lstlisting}
+The generator's type means that it is a {\em monadic} value of
+an abstract syntax tree for a Haskell's declaration. This
+abstract syntax tree will then be used to generate the
+declaration code for the type Hedge.\\
+The language extension TemplateHaskell makes this kind of metaprogramming
+possible.
+\subsubsection{Internal definition:}
+\begin{itemize}
+ \item hedgeDef :: [String] -> [String] -> [String] -> [[String]] ->
+         [[String]] -> [Dec]\\
+         This function takes the hedge definition's information
+         extracted from the knowledge base and construct the
+         abstract syntax tree of the declaration.
+
+ \item cliGen :: FilePath -> IO [Dec]\\
+         This IO function takes the path to the knowledge base
+         and gets hedge definition from it, passes the
+         definition to the aforementioned hedgeDef then returns
+         the generated abstract syntax tree.\\
+         It also performs initialization if the input knowledge
+         base is a new file.
+ \item startup :: IO [Dec]\\
+         Wrapper around cliGen, to catch any unexpected
+         exception. q will be created from this IO value.
+
+ \item bulkQuery :: FilePath -> [String] -> IO [Integer]\\
+       initSchema :: [String]\\
+       Initialization for new knowledge base.
+\end{itemize}
+
+\subsection{Module Hedgen.Ahedge}
+\subsubsection{Import and Export:}
+\begin{lstlisting}
+module Hedgen.Ahedge (
+        Hedge(..),
+) where
+import Hedgen.Hgen
+import HedgeClass
+import Language.Haskell.TH
+import Language.Haskell.TH.Syntax
+\end{lstlisting}
+\subsubsection{Description} Importing the generator q from Hgen and generating the
+declaration for the type Hedge from q.\\
+This module also defines the instance declaration of Ord
+typeclass for Hedge using the Ha typeclass' method compare'. This
+enables values of Hedge to use general comparing operation like <
+or >= just like other Haskell's ordered types.
+\subsubsection{Internal definition}
+\begin{itemize}
+        \item data Hedge = ... \\
+                generated from Hgen.q\\
+                {\bfseries Instances: }
+         \begin{itemize}
+                 \item Enum Hedge 
+                 \item Eq Hedge 
+                 \item Ord Hedge
+                 \item Read Hedge 
+                 \item Show Hedge 
+                 \item Ha Hedge
+        \end{itemize}
+        \item instance Ord Hedge where compare = compare'\\
+                Ord instance definition for Hedge                
+\end{itemize}
+
 \subsection{Module HedgeTruth}
+\subsubsection{Import and Export:}
+\begin{lstlisting}
+module HedgeTruth (
+        Truth(..),
+        module HedgeClass,
+        module Data.List,
+        isHTrue,
+        isHFalse,
+        andH,
+        orH,
+        notH,
+        (><)) where
+import
+HedgeClass
+import
+Data.List
+\end{lstlisting}
+\subsubsection{Description}
+
+\subsubsection{Internal Definition}
+data Truth hedge
+
+Constructors
+Tru [hedge]
+Fals [hedge]
+Maxt 
+Mint 
+
+Instances
+Eq hedge => Eq (Truth hedge)
+Ha h => Ord (Truth h)
+Read hedge => Read (Truth hedge)
+Show h => Show (Truth h)
+
+isHTrue :: Truth h -> Bool
+
+isHFalse :: Truth h -> Bool
+
+andH :: Ha h => Truth h -> Truth h -> Truth h
+
+orH :: Ha h => Truth h -> Truth h -> Truth h
+
+notH :: Ha h => Truth h -> Truth h
+
+(><) :: Ha h => Truth h -> Truth h -> Bool
+
 \subsection{Module ProsLogic}
+\subsubsection{Import and Export:}
+\begin{lstlisting}
+module ProsLogic (
+        Lit(..),
+        CNF(..),
+        truthLit,
+        stringLit,
+        lsCNF,
+        smartCNF,
+        sortCNF,
+        sortLits,
+        negateLit,
+        module HedgeTruth,
+        module HedgeClass,
+        module Data.List
+) where
+import HedgeTruth
+import HedgeClass
+import Data.List
+\end{lstlisting}
+
+\subsubsection{Description}
+\subsubsection{Internal Definition}
+
+data Lit hedge
+
+Constructors
+Lit String (Truth hedge)subsection 
+
+Instances
+Eq hedge => Eq (Lit hedge)subsection 
+Read hedge => Read (Lit hedge)subsection 
+Show hedge => Show (Lit hedge)subsection 
+
+truthLit :: Lit t -> Truth t
+
+stringLit :: Lit t -> String
+
+data CNF a
+
+Constructors
+CNF [a]subsection 
+
+Instances
+Show a => Show (CNF a)subsection 
+
+lsCNF :: CNF t -> [t]
+
+negateLit :: Ha hedge => Lit hedge -> Lit hedge
+
+smartCNF :: Ha hedge => [Lit hedge] -> CNF (Lit hedge)
+
+sortCNF :: Ha hedge => CNF (Lit hedge) -> CNF (Lit hedge)
+
+sortLits :: Ha hedge => [Lit hedge] -> [Lit hedge]
+
 \subsection{Module AlphaResolution}
+\subsubsection{Import and Export:}
+\begin{lstlisting}
+module AlphaResolution (
+        module HedgeClass,
+        module HedgeTruth,
+        module ProsLogic,
+        module Data.List,
+        smartClause,
+        confidence,
+        resolvent',
+        resolution,
+        resolution',
+        resolution'',
+        nilH,
+        rmTau,
+        Debug.Trace.trace,
+        Clause(..)
+)
+where
+import Data.List
+import HedgeClass
+import HedgeTruth
+import ProsLogic
+import Debug.Trace
+\end{lstlisting}
+\subsubsection{Description}
+
+\subsubsection{Internal Definition}
+type Clause hedge = ([Lit hedge], Truth hedge)
+
+nilH :: Ha hedge => Lit hedge
+
+smartClause :: Ha hedge => CNF (Lit hedge) -> Truth hedge ->
+Clause hedge
+
+confidence :: Ha h => Truth h -> Truth h -> Truth h -> Truth h ->
+Truth h
+
+resolution :: Ha hedge => [([Lit hedge], Truth hedge)] -> (Maybe
+(Truth hedge), [(([Lit hedge], Truth hedge), ([Lit hedge], Truth
+hedge), ([Lit hedge], Truth hedge))])
+
+resolution' :: Ha hedge => [([Lit hedge], Truth hedge)] ->
+[(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge))] ->
+[(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge), ([Lit
+hedge], Truth hedge))] -> [(String, Maybe t)] -> (Maybe (Truth
+hedge), [(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge),
+([Lit hedge], Truth hedge))])
+
+rmTau :: Ha h => [([Lit h], t)] -> [([Lit h], t)]
+
+resolvent' :: Ha hedge => Clause hedge -> Clause hedge -> Maybe
+[Clause hedge]
+
+resolution'' :: Ha hedge => [([Lit hedge], Truth hedge)] ->
+[(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge))] ->
+Maybe (Truth hedge)
+
 \subsection{Module Hio}
+\subsubsection{Import and Export:}
+\begin{lstlisting}
+module DBio.Hio(
+  hManager,
+  hMMenu,
+  printPosH,
+  printNegH,
+  ) where
+import SelfRestart
+import Util.UtilB
+import Database.HDBC
+import Database.HDBC.Sqlite3
+import Control.Monad
+import Data.Char
+import SelfRestart(selfRestart,exitImmediately,ExitCode(..))
+import System.Environment(getProgName)
+\end{lstlisting}
+\subsubsection{Description}
+
+\subsubsection{Internal Definition}
+printlH :: IConnection conn => String -> conn -> IO ()
+
+printPosH :: IConnection conn => conn -> IO ()
+
+printNegH :: IConnection conn => conn -> IO ()
+
+removeH :: String -> String -> IO ()
+
+removelH :: String -> String -> String -> IO ()
+
+removePosH :: String -> String -> IO ()
+
+removeNegH :: String -> String -> IO ()
+
+addlH :: String -> String -> String -> String -> String -> IO ()
+
+addNegH :: String -> String -> String -> String -> IO ()
+
+addPosH :: String -> String -> String -> String -> IO ()
+
+changeOrd :: String -> String -> String -> String -> IO ()
+
+changePosOrd :: String -> String -> String -> IO ()
+
+changeNegOrd :: String -> String -> String -> IO ()
+
+renameHedge :: String -> String -> String -> IO ()
+
+addlRel :: String -> String -> String -> String -> IO ()
+
+addPosRel :: String -> String -> String -> IO ()
+
+addNegRel :: String -> String -> String -> IO ()
+
+removelRel :: String -> String -> String -> String -> IO ()
+
+removePosRel :: String -> String -> String -> IO ()
+
+removeNegRel :: String -> String -> String -> IO ()
+
+hMMenu :: [String]
+
+hManager :: String -> IO ()
+
+printHedges :: String -> IO ()
 \subsection{Module KBio}
-\subsection{Module UtilA and Module UtilB}
+\subsubsection{Import and Export:}
+\begin{lstlisting}
+module DBio.KBio 
+where
+import ProsLogic
+import Hedgen.Ahedge
+import AlphaResolution
+import Util.UtilA
+\end{lstlisting}
+\subsubsection{Description}
+
+\subsubsection{Internal Definition}
+sid\_to\_hstring :: FilePath -> SqlValue -> IO [String]
+
+hStringtoHid :: String -> [String] -> IO (Maybe [SqlValue])
+
+find\_sid :: IConnection conn => conn -> ([SqlValue], SqlValue,
+[SqlValue]) -> IO ([SqlValue], SqlValue, [SqlValue])
+
+insert\_if\_not\_exist\_sid :: String -> [Char] -> IO (Maybe
+SqlValue)
+
+getCid :: String -> IO [String]
+
+getCNF :: String -> IO [CNF (Lit Hedge)]
+
+parseGoal :: String -> Lit Hedge
+
+parseGoals :: String -> [Lit Hedge]
+
+parseInpClause :: [Char] -> [[[Char]]]
+
+changeByCID :: String -> String -> String -> IO ()
+
+changeClause :: String -> [Char] -> String -> IO ()
+
+deleteByCID :: String -> String -> IO ()
+
+deleteClause :: String -> [Char] -> IO ()
+
+addClause :: String -> [Char] -> IO ()
+
+\subsection{Module UtilA}
+\subsubsection{Import and Export:}
+\begin{lstlisting}
+module Util.UtilA (
+    okTruthStr,
+    toClause,
+    printClauses,
+    printLits,
+    prove,
+    printHedges,    
+    nil,
+    headIs,
+    findHead,
+    retrace,
+    module SelfRestart,
+    module Util.UtilB, 
+    module DBio.Hio
+  ) where
+import ProsLogic
+import Hedgen.Ahedge
+import AlphaResolution
+
+import Data.IORef
+import Data.List.Split
+import Data.Char
+
+import Database.HDBC
+import Database.HDBC.Sqlite3
+
+import System.Environment
+import System.Console.Readline
+
+import Control.Concurrent
+import Control.Monad
+import Util.UtilB
+import DBio.Hio
+import SelfRestart (selfRestart,
+forkSelfRestartExePollWithAction, exitImmediately, ExitCode(..))
+
+\end{lstlisting}
+\subsubsection{Description}
+
+\subsubsection{Internal Definition}
+okTruthStr :: [Char] -> Bool
+
+toClause :: Ha hedge => [CNF (Lit hedge)] -> [Clause hedge]
+
+printClauses :: Show a => [([a], t)] -> IO ()
+
+printLits :: Ha hedge => [CNF (Lit hedge)] -> IO ()
+
+prove :: Ha hedge => [CNF (Lit hedge)] -> CNF (Lit hedge) ->
+(Maybe (Truth hedge), [(([Lit hedge], Truth hedge), ([Lit hedge],
+Truth hedge), ([Lit hedge], Truth hedge))])
+
+printHedges :: FilePath -> IO ()
+
+nil :: [Lit Hedge]
+
+headIs :: Eq a => a -> (a, t, t1) -> Bool
+
+findHead :: Eq a => a -> [(a, t, t1)] -> Maybe (a, t, t1)
+
+retrace :: (Eq t, Show t) => t -> [(t, t, t)] -> [t] -> [Char]
+\subsection{Module UtilB}
+\subsubsection{Import and Export:}
+\begin{lstlisting}
+module Util.UtilB (
+    properFormat,
+    properTruthString,
+    fromQuery,
+    readline'
+  ) where
+import Data.IORef
+import Data.List.Split
+import Data.Char
+
+import Database.HDBC
+import Database.HDBC.Sqlite3
+
+import System.Environment
+import System.Console.Readline
+
+import Control.Concurrent
+import Control.Monad
+\end{lstlisting}
+\subsubsection{Description}
+
+\subsubsection{Internal Definition}
+properFormat :: String -> String
+
+properTruthString :: String -> [String]
+
+fromQuery :: [[SqlValue]] -> [[String]]
+
+readline' :: IO String
+
 \subsection{Module Main}
+\subsubsection{Import and Export:}
+\subsubsection{Description}
+\subsubsection{Internal Definition}
 
 \end{document}
