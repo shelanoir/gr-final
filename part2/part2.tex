@@ -130,12 +130,48 @@ scale=0.8,page=2]{part2/DataModel}
 The hedges table containing all hedges that was defined in the database, but
 in actuallity the system will only consider those actually present in
 the positive and negative tables, since any hedge must either be
-positive or negative, but can't be neither.\\
-The system also prevents users from adding a hedge to both tables, to
-guarantee that a hedge would not be both positive and negative.\\
-The precedence column in these tables indicate the order of hedge, the
+positive or negative, but can't be neither.
+\paragraph{} The system also prevents users from adding a hedge to both tables, to
+guarantee that a hedge would not be both positive and negative.
+\paragraph{} The precedence column in these tables indicate the order of hedge, the
 smaller the precedence the stronger the hedge is w.r.t. other hedge in
-the same list.
+the same list. To preserve the consistency of ordering in the two
+positive/negative tables, two triggers are defined for each
+table:\\
+\begin{lstlisting}
+CREATE TRIGGER posl_delete  
+AFTER DELETE ON posl  
+BEGIN
+UPDATE posl SET pred = pred - 1          
+WHERE posl.pred >= OLD.pred 
+      AND posl.hid != OLD.hid;
+END;
+
+CREATE TRIGGER posl_insert   
+AFTER INSERT ON posl   
+BEGIN
+UPDATE posl SET pred = pred + 1
+WHERE posl.pred >= NEW.pred 
+      AND posl.hid != NEW.hid;  
+END;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+CREATE TRIGGER negl_delete  
+AFTER DELETE ON negl  
+BEGIN
+UPDATE negl SET pred = pred - 1
+WHERE negl.pred >= OLD.pred 
+      AND negl.hid != OLD.hid;  
+END;
+
+CREATE TRIGGER negl_insert   
+AFTER INSERT ON negl   
+BEGIN
+UPDATE negl SET pred = pred + 1        
+WHERE negl.pred >= NEW.pred 
+      AND negl.hid != NEW.hid;  
+END;
+\end{lstlisting}
+
 \paragraph{positive/negative relation:}
 The user is also restricted to only modify one of these two tables at
 a time, since doing both would likely to result in conflicts: remember
@@ -464,7 +500,7 @@ or >= just like other Haskell's ordered types.
 \subsubsection{Internal definition}
 \begin{itemize}
         \item data Hedge = ... \\
-                generated from Hgen.q\\
+                generated from Hgen.q\\\\
                 {\bfseries Instances: }
          \begin{itemize}
                  \item Enum Hedge 
@@ -483,8 +519,6 @@ or >= just like other Haskell's ordered types.
 \begin{lstlisting}
 module HedgeTruth (
         Truth(..),
-        module HedgeClass,
-        module Data.List,
         isHTrue,
         isHFalse,
         andH,
@@ -497,33 +531,47 @@ import
 Data.List
 \end{lstlisting}
 \subsubsection{Description}
-
+This module defines the representation of linguistic truth
+values, including the data type for truth value and some
+operators on the data type.
 \subsubsection{Internal Definition}
-data Truth hedge
+\begin{itemize}
+\item data Truth hedge - The data type representing linguistic
+        truth values.\\\\
+        {\bfseries Constructors}
+      \begin{itemize}
+              \item Tru [hedge] - constructs from a list
+                      [$h_1,h_2..h_n$] the value $h_1 h_2 ..
+                h_n$ True
+        \item Fals [hedge] - constructs from a list
+                      [$h_1,h_2..h_n$] the value $h_1 h_2 ..
+                h_n$ False 
+        \item Maxt - representing the absolutely True value
+        \item Mint - representing the absolutely False value
+      \end{itemize}
+        {\bfseries Instances}
+        \begin{itemize}
+          \item Eq hedge => Eq (Truth hedge)
+          \item Ha h => Ord (Truth h)
+          \item Read hedge => Read (Truth hedge)
+          \item Show h => Show (Truth h)
+        \end{itemize}
 
-Constructors
-Tru [hedge]
-Fals [hedge]
-Maxt 
-Mint 
-
-Instances
-Eq hedge => Eq (Truth hedge)
-Ha h => Ord (Truth h)
-Read hedge => Read (Truth hedge)
-Show h => Show (Truth h)
-
-isHTrue :: Truth h -> Bool
-
-isHFalse :: Truth h -> Bool
-
-andH :: Ha h => Truth h -> Truth h -> Truth h
-
-orH :: Ha h => Truth h -> Truth h -> Truth h
-
-notH :: Ha h => Truth h -> Truth h
-
-(><) :: Ha h => Truth h -> Truth h -> Bool
+\item isHTrue :: Truth h -> Bool\\
+        Determine if a linguistic truth value is a positive term
+        or not
+\item isHFalse :: Truth h -> Bool\\
+        Determine if a linguistic truth value is a positive term
+        or not
+\item andH :: Ha h => Truth h -> Truth h -> Truth h\\
+        Linguistic logic And
+\item orH :: Ha h => Truth h -> Truth h -> Truth h\\
+        Linguistic logic Or
+\item notH :: Ha h => Truth h -> Truth h\\
+        Linguistic logic Not
+\item (><) :: Ha h => Truth h -> Truth h -> Bool\\
+        Test whether if two linguistic truth values are opposite or not
+\end{itemize}
 
 \subsection{Module ProsLogic}
 \subsubsection{Import and Export:}
@@ -538,67 +586,70 @@ module ProsLogic (
         sortCNF,
         sortLits,
         negateLit,
-        module HedgeTruth,
-        module HedgeClass,
-        module Data.List
 ) where
 import HedgeTruth
 import HedgeClass
 import Data.List
 \end{lstlisting}
-
 \subsubsection{Description}
+This module defines the propositional fuzzy logic with truth
+values being the type defined in module HedgeTruth. Also provides
+some utilities to work with Literals and CNF clauses of this
+logic.
 \subsubsection{Internal Definition}
+\begin{itemize}
+        \item data Lit hedge - A type representing Literals in this propositional fuzzy
+                logic\\\\
+         {\bfseries Constructors}
+         \begin{itemize}
+                 \item  Lit String (Truth hedge) - Construct a
+                         Literal from a string being its sentence and a truth value 
+         \end{itemize}
+         {\bfseries Instances}
+          \begin{itemize}
+            \item Eq hedge => Eq (Lit hedge)
+            \item Read hedge => Read (Lit hedge) 
+            \item Show hedge => Show (Lit hedge)
+          \end{itemize}
 
-data Lit hedge
+         \item data CNF a - A disjunction of Literals\\\\
+         {\bfseries Constructors}
+         \begin{itemize}
+          \item CNF [a] - Construct a disjunction of Literals
+                  from a list of Literals.
+         \end{itemize}
+        {\bfseries Instances}
+        \begin{itemize}
+         \item Show a => Show (CNF a)
+        \end{itemize}
 
-Constructors
-Lit String (Truth hedge)subsection 
-
-Instances
-Eq hedge => Eq (Lit hedge)subsection 
-Read hedge => Read (Lit hedge)subsection 
-Show hedge => Show (Lit hedge)subsection 
-
-truthLit :: Lit t -> Truth t
-
-stringLit :: Lit t -> String
-
-data CNF a
-
-Constructors
-CNF [a]subsection 
-
-Instances
-Show a => Show (CNF a)subsection 
-
-lsCNF :: CNF t -> [t]
-
-negateLit :: Ha hedge => Lit hedge -> Lit hedge
-
-smartCNF :: Ha hedge => [Lit hedge] -> CNF (Lit hedge)
-
-sortCNF :: Ha hedge => CNF (Lit hedge) -> CNF (Lit hedge)
-
-sortLits :: Ha hedge => [Lit hedge] -> [Lit hedge]
+        \item truthLit :: Lit t -> Truth t\\
+                Get the truth value of a Literal
+        \item stringLit :: Lit t -> String\\
+                Get the sentence of a Literal
+        \item lsCNF :: CNF t -> [t]\\
+                Convert the disjunction back to a list of
+                Literals.
+        \item negateLit :: Ha hedge => Lit hedge -> Lit hedge\\
+                Negate the truth value of a Literal
+        \item smartCNF :: Ha hedge => [Lit hedge] -> CNF (Lit hedge)
+                Sorts the list of Literals before construct a
+                disjunction.
+        \item sortCNF :: Ha hedge => CNF (Lit hedge) -> CNF (Lit hedge)
+                Sort the Literals in a disjunction.
+        \item sortLits :: Ha hedge => [Lit hedge] -> [Lit hedge]
+                Sort the Literals in a list of Literals.
+\end{itemize}
 
 \subsection{Module AlphaResolution}
 \subsubsection{Import and Export:}
 \begin{lstlisting}
 module AlphaResolution (
-        module HedgeClass,
-        module HedgeTruth,
-        module ProsLogic,
-        module Data.List,
         smartClause,
         confidence,
         resolvent',
         resolution,
-        resolution',
-        resolution'',
         nilH,
-        rmTau,
-        Debug.Trace.trace,
         Clause(..)
 )
 where
@@ -621,25 +672,16 @@ Clause hedge
 confidence :: Ha h => Truth h -> Truth h -> Truth h -> Truth h ->
 Truth h
 
-resolution :: Ha hedge => [([Lit hedge], Truth hedge)] -> (Maybe
-(Truth hedge), [(([Lit hedge], Truth hedge), ([Lit hedge], Truth
-hedge), ([Lit hedge], Truth hedge))])
+resolution :: Ha hedge => [Clause hedge] -> (Maybe
+(Truth hedge), [(Clause hedge, Clause hedge, Clause hedge)])
 
-resolution' :: Ha hedge => [([Lit hedge], Truth hedge)] ->
-[(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge))] ->
+resolution' :: Ha hedge => [Clause hedge] ->
+[(Clause hedge, Clause hedge)] ->
 [(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge), ([Lit
 hedge], Truth hedge))] -> [(String, Maybe t)] -> (Maybe (Truth
 hedge), [(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge),
 ([Lit hedge], Truth hedge))])
 
-rmTau :: Ha h => [([Lit h], t)] -> [([Lit h], t)]
-
-resolvent' :: Ha hedge => Clause hedge -> Clause hedge -> Maybe
-[Clause hedge]
-
-resolution'' :: Ha hedge => [([Lit hedge], Truth hedge)] ->
-[(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge))] ->
-Maybe (Truth hedge)
 
 \subsection{Module Hio}
 \subsubsection{Import and Export:}
@@ -791,29 +833,38 @@ forkSelfRestartExePollWithAction, exitImmediately, ExitCode(..))
 
 \end{lstlisting}
 \subsubsection{Description}
-
+This module defines some commonly used small utilities that don't
+really fit anywhere else. Only valid {\em after} Hedge is
+defined. It also reexports a bunch of other modules for
+convenience.
 \subsubsection{Internal Definition}
-okTruthStr :: [Char] -> Bool
-
-toClause :: Ha hedge => [CNF (Lit hedge)] -> [Clause hedge]
-
-printClauses :: Show a => [([a], t)] -> IO ()
-
-printLits :: Ha hedge => [CNF (Lit hedge)] -> IO ()
-
-prove :: Ha hedge => [CNF (Lit hedge)] -> CNF (Lit hedge) ->
-(Maybe (Truth hedge), [(([Lit hedge], Truth hedge), ([Lit hedge],
-Truth hedge), ([Lit hedge], Truth hedge))])
-
-printHedges :: FilePath -> IO ()
-
-nil :: [Lit Hedge]
-
-headIs :: Eq a => a -> (a, t, t1) -> Bool
-
-findHead :: Eq a => a -> [(a, t, t1)] -> Maybe (a, t, t1)
-
-retrace :: (Eq t, Show t) => t -> [(t, t, t)] -> [t] -> [Char]
+\begin{itemize}
+        \item okTruthStr :: [Char] -> Bool\\
+         Check if a truth string is in proper format or not
+        \item toClause :: Ha hedge => [CNF (Lit hedge)] ->
+                [Clause hedge]\\
+              Transform a CNF clause into a Clause.  
+        \item printClauses :: Show a => [([a], t)] -> IO ()\\
+                print a set of Clauses
+%        \item printLits :: Ha hedge => [CNF (Lit hedge)] -> IO ()
+        \item prove :: Ha hedge => [CNF (Lit hedge)] -> CNF (Lit hedge) ->
+           (Maybe (Truth hedge), [(Clause hedge, Clause hedge, Clause hedge)])\\
+            Wrapper around the alphaResolution function, it takes
+            a knowledge base and a CNF clause, then return a pair
+            consists of a Maybe value of confidence value, and a
+            tracing list that can be used to recreate the proof.          
+        \item printHedges :: FilePath -> IO ()\\
+                print the hedges structure currently using in
+                parallel with the one defined in the knowledge base. The FilePath
+                parameter is meant for the path to the database
+                file.
+        \item nil :: [Lit Hedge]
+                the nil Clause.
+%        \item headIs :: Eq a => a -> (a, t, t1) -> Bool
+%        \item findHead :: Eq a => a -> [(a, t, t1)] -> Maybe (a, t, t1)
+        \item retrace :: (Eq t, Show t) => t -> [(t, t, t)] -> [t] -> [Char]
+                recreate the proof from the trace.
+\end{itemize}
 \subsection{Module UtilB}
 \subsubsection{Import and Export:}
 \begin{lstlisting}
@@ -837,19 +888,38 @@ import Control.Concurrent
 import Control.Monad
 \end{lstlisting}
 \subsubsection{Description}
-
+This module defines some commonly used small utilities that don't
+fit anywhere else. Always available.
 \subsubsection{Internal Definition}
-properFormat :: String -> String
-
-properTruthString :: String -> [String]
-
-fromQuery :: [[SqlValue]] -> [[String]]
-
-readline' :: IO String
-
+\begin{itemize}
+\item properFormat :: String -> String\\
+        Transform a single word to proper format
+\item properTruthString :: String -> [String]\\
+        Transform a sentence into a list of properly formatted
+        words.
+\item fromQuery :: [[SqlValue]] -> [[String]]\\
+        Convert the SqlValue results of SQL queries into Haskell
+        value.
+\item readline' :: IO String\\
+        A wrapper for the library function readline. Used
+        for getting interactive input in place of readline.
+\end{itemize}
 \subsection{Module Main}
 \subsubsection{Import and Export:}
+\begin{lstlisting}
+module Main where
+import Util.UtilA
+import Util.UtilB
+import DBio.KBio
+import DBio.Hio
+import ProsLogic
+import Hedgen.Ahedge
+import AlphaResolution
+import Control.Exception
+\end{lstlisting}
 \subsubsection{Description}
-\subsubsection{Internal Definition}
+This module simply defines the main IO loop to interact with the
+user.
+%\subsubsection{Internal Definition}
 
 \end{document}
