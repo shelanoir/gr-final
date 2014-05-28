@@ -22,13 +22,14 @@ derived from them will be determined by their given confidence value. Obviously 
 confidence must not be larger than its original formulae's.
 
 \subsection{Resolution rule}
-{\bfseries Resolution rule:} Given \(A^a \vee B^{b1}\) and \(C^c \vee B^{b2}\). If \(b1 \vee b2 
+\paragraph{Resolution rule:} Given \(A^a \vee B^{b1}\) and \(C^c \vee B^{b2}\). If \(b1 \vee b2 
 \ge W\) and \(b1 \wedge b2 < W\):
 \begin{align*}
 	&\frac{(A^a \vee B^{b1}, {\alpha 1}), (C^c \vee B^{b2}, {\alpha 2})} {(A^a \vee C^c, {\alpha 3})}\\
 	&\text{Where: }
 	\begin{cases}
-	\alpha 1, \alpha 2, \alpha 3 \text{ are the reliability of formulae.}\\
+	\alpha 1, \alpha 2, \alpha 3 \text{ are the confidence
+        values of formulae.}\\
 	A, B, C \text{ are propositional symbols}\\
 	a, b1, b2, c \text{ are linguistic value}
 	\end{cases}
@@ -36,11 +37,13 @@ confidence must not be larger than its original formulae's.
 	&\text{If } (A^a \vee B^{b1}, {\alpha 1}) \wedge (C^c \vee B^{b2}, {\alpha 2}) \text{ is 
 	unsatisfiable, the result of resolution is the null clause.} 
 \end{align*}
-\(\implies\) To be able to reasoning using resolution, we first have to transform the original
-formulae into their CNFs.\\
+\paragraph{} Since the resolution rule only applies to
+disjuntions of literals, to be able to reasoning using
+resolution, we first have to transform the original formulae into
+a conjuntion of disjunction of literals, or a CNF.  The procedure
+to achieve this was discussed in the previous section.\\
 
-
-{\bfseries Resolution algorithm:} 
+\subsection{Resolution algorithm:} 
  To prove that a goal clause G entails the knowledge base KB, e.g \(KB \models G\), we can instead prove
 that \(KB \cup \neg G\) is unsatisfiable.\\\\
 \indent {\em Input: S = \(KB \cup \neg G\)}\\
@@ -50,11 +53,123 @@ that \(KB \cup \neg G\) is unsatisfiable.\\\\
 \indent Foreach (clause C1 in S)\\
 \indent \indent Foreach (clause C2 in S)\\
 \indent \indent \indent If (C1 and C2 can be resolved) C3 := resolve(C1,C2);\\
-\indent \indent \indent If (C3 = NULL) return true;\\
-\indent \indent \indent Else (Add C3 to S);\\
-\indent If (S does not contain NULL) then return false;\\
-\indent{\bfseries END}\\
+\indent \indent \indent If (C3 = NULL) return Confidence(C3);\\
+\indent \indent \indent Else Reduce(C3)\\
+\indent \indent \indent \indent (Add C3 to S);\\
+\indent If (S does not contain NULL) then return Nothing;\\
+\indent{\bfseries END}
+\paragraph{} Where Confidence(C3) is the confidence value of
+C3, and Reduce(C3) is C3 after it was reduced by elimination of
+redundant literals. The following subsections will further
+elaborate on them.
 
+\subsection{Reducing disjunction of literals}
+\paragraph{} Unlike classical propositional logic,
+literals in this fuzzy propositional logic can say the same thing
+(i.e. have the same symbol) but have different truth value
+annotated to them which are significant in interpretation, and
+eliminating arbitrary literals among them may change the clause's
+semantics. Because of this, we have to consider a way to safely
+reduce disjunction-of-literals without altering its semantics.
+\paragraph{Theorem:} Given a symbol A, for any interpretation
+I:\{A = c\}, we have:
+\[
+   \begin{cases}
+           T_{I:\{A = c\}}(A^{a} \vee A^{b}) &=  T_{I:\{A =
+           c\}}(A^{a \vee b})  \text{ if } c > W \\
+
+           T_{I:\{A = c\}}(A^{a} \vee A^{b}) &=  T_{I:\{A =
+           c\}}(A^{a \wedge b}) \text{ if } c < W
+   \end{cases}
+\]
+
+\subsubsection{Proof:}
+{\bfseries Case 1: a, b > W, c > W}
+\begin{align*}
+        T_{I:\{A = c\}}(A^{a} \vee A^{b}) &= T_{I:\{A =
+                 c\}}(A^{a}) \vee T_{I:\{A = c\}}(A^{b}) \\
+                 &= (a \wedge c) \vee (b \wedge c) \\
+                 &= (a \vee b) \wedge c \\
+                 &= T_{I:\{A = c\}}(A^{a \vee b}) \\
+\end{align*}
+
+{\bfseries Case 2: a, b > W, c < W}
+\begin{align*}
+        T_{I:\{A = c\}}(A^{a} \vee A^{b}) 
+                 &= T_{I:\{A = c\}}(A^{a}) \vee T_{I:\{A = c\}}(A^{b}) \\
+                 &= (\neg{a} \vee c) \vee (\neg{b} \vee c) \\
+                 &= (\neg{a} \vee \neg{b}) \vee c \\
+                 &= \neg{(a \wedge b)} \vee c \\
+                 &= T_{I:\{A = c\}}(A^{a \wedge b}) \\
+\end{align*}
+
+{\bfseries Case 3: a, b < W, c > W}
+\begin{align*}
+        T_{I:\{A = c\}}(A^{a} \vee A^{b}) 
+                 &= T_{I:\{A = c\}}(A^{a}) \vee T_{I:\{A = c\}}(A^{b}) \\
+                 &= (a \vee \neg{c}) \vee (b \vee \neg{c}) \\
+                 &= (a \vee b) \vee \neg{c} \\
+                 &= T_{I:\{A = c\}}(A^{a \vee b}) \\
+\end{align*}
+
+{\bfseries Case 4: a, b < W, c < W}
+\begin{align*}
+        T_{I:\{A = c\}}(A^{a} \vee A^{b}) 
+                 &= T_{I:\{A = c\}}(A^{a}) \vee T_{I:\{A = c\}}(A^{b}) \\
+                 &= \neg{(a \vee c)} \vee \neg{(b \vee c)} \\
+                 &= (\neg{a} \wedge \neg{c}) \vee (\neg{b} \wedge \neg{c})\\
+                 &= (\neg{a} \vee \neg{b}) \wedge \neg{c}\\
+                 &= \neg{(a \wedge b)} \wedge \neg{c}\\
+                 &= \neg{((a \wedge b) \vee c)}\\
+                 &= T_{I:\{A = c\}}(A^{a \wedge b}) \\
+\end{align*}
+
+{\bfseries Case 5: a > W, b < W, c > W}
+\begin{align*}
+        T_{I:\{A = c\}}(A^{a} \vee A^{b}) 
+                 &= T_{I:\{A = c\}}(A^{a}) \vee T_{I:\{A = c\}}(A^{b}) \\
+                 &= (a \wedge c) \vee (b \vee \neg{c}) \\
+                 &= (a \vee b \vee \neg{c}) \wedge (b \vee \neg{c} \vee c)\\
+                 &= (a \vee b \vee \neg{c}) \wedge (b \vee c)\\
+                 &= (a \wedge b) \vee (a \wedge c) \vee (b \wedge
+                        b) \vee (b \wedge c) \vee (b \wedge \neg{c}) \vee (c \wedge
+                        \neg{c})\\            
+                 &= (a \wedge c) \text{\: (for $a \wedge c = max(a \wedge
+                        b, a \wedge c, b \wedge
+                        b = b, b \wedge c, b \wedge \neg{c}, c \wedge
+                        \neg{c} = \neg{c})$)}\\        
+                 &= (a \vee b) \wedge c \text{\: (for $a
+                        \vee b = max(a,b) = a$)} \\
+                 &= T_{I:\{A = c\}}(A^{a \vee b}) \\
+\end{align*}
+
+{\bfseries Case 6: a > W, b < W, c < W}
+\begin{align*}
+        T_{I:\{A = c\}}(A^{a} \vee A^{b}) 
+                 &= T_{I:\{A = c\}}(A^{a}) \vee T_{I:\{A = c\}}(A^{b}) \\
+                 &= (\neg{a} \vee c) \vee \neg{(b \vee c)} \\
+                 &=  (\neg{a} \vee c) \vee (\neg{b} \wedge \neg{c})\\
+                 &= (\neg{a} \vee \neg{b} \vee c) \wedge (\neg{a} \vee c \vee \neg{c}\\
+                 &= (\neg{a} \vee \neg{b} \vee c) \wedge (\neg{a} \vee \neg{c}\\
+                 &= \neg{a} \vee ((\neg{b} \vee c) \wedge \neg{c}))\\
+                 &= \neg{a} \vee (\neg{b} \wedge \neg{c})\\
+                 &= \neg{b} \wedge \neg{c} \text{
+        \: (for $(\neg{b} \wedge \neg{c}) = max(\neg{a}, \neg{b} \wedge \neg{c})$)}\\
+                 &= \neg{(b \vee c)}\\
+                 &= \neg{(b \wedge a) \vee c} \text{\: (for $b = min(a,b)$)}\\
+                 &= \neg{((a \wedge b) \vee c)}\\
+                 &= T_{I:\{A = c\}}(A^{a \wedge b}) \\
+\end{align*}
+\paragraph{} From {\bfseries case 1 -> case 6}\\
+$\implies$ \(
+   \begin{cases}
+           T_{I:\{A = c\}}(A^{a} \vee A^{b}) &=  T_{I:\{A =
+           c\}}(A^{a \vee b})  \text{ if } c > W \\
+
+           T_{I:\{A = c\}}(A^{a} \vee A^{b}) &=  T_{I:\{A =
+           c\}}(A^{a \wedge b}) \text{ if } c < W
+   \end{cases} 
+   \) (q.e.d).
 
 \subsection{Confidence value in HA-based logic}
 By the definition of resolution, we can see for the two clauses to be able to resolve, \(b_1\) and 
@@ -193,14 +308,15 @@ tree if S is a n-depth complete binary tree, each level corresponding to a liter
 of a node is labeled \(A_i < W\) and \(A_i > W\). 
 \(\implies\) The semantic tree represents every interpretation possible for S, with each branch from
 root to a leaf corresponding to an interpretation. The trivial case of \(A_i = W\) is not considered.\\\\
+\begin{figure}[h]
+        \centering
 \xytree{
 	%&&\xynode[-2,-1,0,1,2]{S}\\
-	&&&&&&\xynode{} \xyconnect{1,-2}"_{\(A_{1} < W\)}" \xyconnect{1,2}"^{\(A_{1} > W\)}"\\
-	&&&&\xynode{} \xyconnect{1,-1}"_{\(A_{2} < W\)}" \xyconnect{1,1}"^{\(A_{2} > W\)}" 
+        &&&&\xynode{} \xyconnect{1,-2}"_{\(A_{1} < W\)}" \xyconnect{1,2}"^{\(A_{1} > W\)}"\\
+        &&\xynode{} \xyconnect{1,-1}"_{\(A_{2} < W\)}" \xyconnect{1,1}"^{\(A_{2} > W\)}" 
 	&&&& \xynode{} \xyconnect{1,-1}"_{\(A_{2} < W\)}" \xyconnect{1,1}"^{\(A_{2} > W\)}"\\ 
-	&&&\xynode{} && \xynode{} && \xynode{} && \xynode{}\\ 
+         &\xynode{} && \xynode{} && \xynode{} && \xynode{}\\ 
 }
-\begin{figure}[h]
 \caption{Semantic tree example}
 \end{figure}
 \\
@@ -219,13 +335,14 @@ must contain the null clause (3)\\
 \paragraph{Proof of completeness: } Now we are going to prove that if \(S = KB \cup \neg G\) is 
 unsatisfiable, resolution will derive the null clause from S. \\
 According to (1), S has a failure tree. According to 2, S has at least one inference node.\\
-
+\begin{figure}[H]
 \xytree{
 	%&&\xynode[-2,-1,0,1,2]{S}\\
-	&&&&&&\xynode{i} \xyconnect{1,-2}"_{\(A_{m} < W\)}" \xyconnect{1,2}"^{\(A_{m} > W\)}"\\
-	&&&&\xynode{j} &&&& \xynode{k} \\
+        &&&&&&&\xynode{i} \xyconnect{1,-2}"_{\(A_{m} < W\)}" \xyconnect{1,2}"^{\(A_{m} > W\)}"\\
+        &&&&&\xynode{j} &&&& \xynode{k} \\
 }
-
+\caption{an inference node i}
+\end{figure}
 Let i be an inference node with j and k are its children. Because S is false at j where \(A_m < W\),
 there must be a false clause C1 in S in the form \(...\vee {A_{m}}^{a1}, a1 > W\) and every other 
 literal in C1 must be false at i. Similarly, there exist a C2 in S that false at k, and it has the form 
@@ -235,7 +352,7 @@ Then we have \(S \vee C\)'s failure tree is S's failure tree cutting off j and k
 Repeat this process until there is only one node left. Now we have the transitive closure of resolution
 on S, and this closure contain the null clause according to (3) (q.e.d).
 \\
-\subsection{Alpha-resolution stragety in HA-based logic}
+\subsection{$\alpha-Resolution$ stragety in HA-based logic}
 \paragraph{} Since different proofs of the same clause may have different reliabilities, 
 it is natural to study how to design a resolution procedure with the best reliability. 
 Below we present such a procedure.
@@ -272,8 +389,15 @@ derivation is a sequence of the form $S_{0},\ldots,S_{i},\ldots$, where
 {\bfseries The limit of a derivation $S_{0},\ldots,S_{i},\ldots$:} 
 $S_{\infty} = \underset{i \ge 0}{\cup} \underset{j \ge i}{\cap}S_{j}$
 \\
-The following result establishes the soundness and completeness of the reso-
-lution procedure.
+
+\paragraph{} The proof of completeness for $\alpha-Resolution$ is a direct
+consequence of the proof of completeness for normal resolution
+using proof tree, since $\alpha-Resolution$ still has the 
+same proof tree with the same nodes like its normal resolution
+equivalence.
+
+\paragraph{} The following result establishes the soundness of
+the $\alpha-Resolution$ procedure.
 \paragraph{Theorem 2}
 Let $S_{0},\ldots,S_{i},\ldots$ be a fuzzy linguistic resolution $\alpha$-strategy derivation.
 Sn contains the empty clause iff S0 is unsatisfiable (for some n = 0, 1,\ldots).

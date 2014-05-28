@@ -3,19 +3,23 @@
 \usepackage[vietnam, english]{babel}
 \usepackage[T5]{fontenc}
 \date{}
-
-\begin {document}
+\usepackage{pdfpages}
+\begin{document}
 %\large
-\title{{\huge Graduation Research Thesis}\\
+%\title{{\huge Graduation Research Thesis}\\
 %Linguistic Logic Reasoning:\\
 %Implementation of Alpha Resolution on fuzzy propositional logic based on Linear Symmetrical Hedge algebra\\
-Implementation of an automated reasoning system on fuzzy propositional
-logic with Linear
-Symmetrical Hedge algebra as its truth domain.
-}
-\author{Instructor: Tran Dinh Khang\\Student: Ngo Nhat Anh, ID: 20090102}
-\maketitle
+%Implementation of an automated reasoning system on fuzzy propositional
+%logic with Linear
+%Symmetrical Hedge algebra as its truth domain.
+%}
+%\author{Instructor: Tran Dinh Khang\\Student: Ngo Nhat Anh, ID: 20090102}
+%\maketitle
+\includepdf{title-test.pdf}
 
+%\begin{figure}[H]
+%        \includegraphics[scale=0.9]{title-test}
+%\end{figure}
 %test
 %\begin{align}
 %e^i\pi\\ A \in B \\B \ni A \\A \not\ni B \\M > N \\\bar{A} \equiv B \cap \bar{C}
@@ -45,7 +49,9 @@ Symmetrical Hedge algebra as its truth domain.
 %blah blah blah huehuehuehueheuhue        
 %hê hê hê
 \end{abstract}
+\listoffigures
 \tableofcontents
+\thispagestyle{fancy}
 \subfile{part1/part1.tex}
 \subfile{part2/part2.tex}
 \subfile{part3/part3.tex}

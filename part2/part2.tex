@@ -106,9 +106,9 @@ The system should be easy to maintain and extend
 \item SelfRestart, a very small library providing the ability for a
   process to restart itself. Unlike other library mentioned here, this
   one is included in the source of the program so there's no need to
-  install it beforehand.
-\item ... and some other libraries, all of them should be installed
-  along with the default Haskell Platform 
+  install it beforehand. Its description will not be included in
+  the design, however.
+  
 \end{itemize}
 
 
@@ -116,16 +116,24 @@ The system should be easy to maintain and extend
 \section{System Design}
 \subsection{Database Design}
 
-\subsubsection{Entity-Relationship diagram}
+\begin{figure}[H]
 \includegraphics[scale=0.45]{part2/ERDiagram}
-
+\caption{Entity-relationship diagram modeling the relation
+between data of the system}
+\end{figure}
 \subsubsection{Database schema}
 \paragraph{}
+
+\begin{figure}[H]
 \includegraphics[clip=true, trim = 90 0 0 0,
 scale=0.8,page=1]{part2/DataModel}
-\paragraph{}
+\end{figure}
+\begin{figure}[H]
 \includegraphics[clip=true, trim = 90 200 0 0,
 scale=0.8,page=2]{part2/DataModel}
+\caption{Database schema of the system}
+\end{figure}
+
 \paragraph{hedges and positive/negative tables:}
 The hedges table containing all hedges that was defined in the database, but
 in actuallity the system will only consider those actually present in
@@ -154,7 +162,8 @@ UPDATE posl SET pred = pred + 1
 WHERE posl.pred >= NEW.pred 
       AND posl.hid != NEW.hid;  
 END;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+_______________________________
+
 CREATE TRIGGER negl_delete  
 AFTER DELETE ON negl  
 BEGIN
@@ -195,12 +204,29 @@ Every literal has a reference to a hstring id, which is the ``hedge'' part
 of its truth value.
 \subsection{Use cases}
 
-\subsubsection{Use cases diagram}
+\begin{figure}[H]
 \includegraphics[scale=0.85]{part2/UsecaseDiagram}
+\caption{Use cases diagram of the system}
+\end{figure}
 
-\subsubsection{Use cases specification}
-{\huge //TODO}
-
+\subsubsection{Use cases Overview}
+\paragraph{} There are three main use cases:
+\begin{itemize}
+  \item {\bfseries Prove} concerns with using the system to prove
+    a proposition w.r.t. to a KB. This UC extends to Explain UC,
+    which concerns with explaining the proof.    
+  \item {\bfseries Managing KB's hedges} concerns with using the
+    system to managing the hedge algebra of a KB. This UC
+    includes add/edit/remove use cases for each hedges list, for
+    for positive and negative relations and print specification
+    about the hedge algebra.
+  \item {\bfseries Managing KB's clauses} concerns with using the
+    system to managing the knowledge base. This UC includes
+    add/remove/edit use cases for clauses, print KB, and check
+    for KB's consistency UCs.    
+\end{itemize}
+\paragraph{} Each use case will be discussed in more detail in
+the {\bfseries Execution Flow} section.
 %\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=1]{part2/UCdesc}
 %\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=2]{part2/UCdesc}
 %\includegraphics[clip=true, trim = 50 0 0 0, scale=0.8, page=3]{part2/UCdesc}
@@ -217,9 +243,17 @@ of its truth value.
 
 \section{Architectural design}
 \subsection{Modular Decomposition}
+\begin{figure}[H]
 \includegraphics[scale=0.78]{part2/_Modules}
-\paragraph{}
+\caption{Module dependency graph}
+\end{figure}
+\paragraph{}For reference purpose, below is the full dependency
+graph of the system, including the external libraries used.
+\begin{figure}[H]
 \includegraphics[width=450pt, height=600pt]{part2/Modules}
+\caption{full dependency graph}
+\end{figure}
+
 \paragraph{} Reflecting the specification, the system is decomposed
 into different groups of modules, each solving a relatively logically separated
 concern:
@@ -501,7 +535,7 @@ or >= just like other Haskell's ordered types.
 \begin{itemize}
         \item data Hedge = ... \\
                 generated from Hgen.q\\\\
-                {\bfseries Instances: }
+                {\bfseries Instances of: }
          \begin{itemize}
                  \item Enum Hedge 
                  \item Eq Hedge 
@@ -549,7 +583,7 @@ operators on the data type.
         \item Maxt - representing the absolutely True value
         \item Mint - representing the absolutely False value
       \end{itemize}
-        {\bfseries Instances}
+        {\bfseries Instances of}
         \begin{itemize}
           \item Eq hedge => Eq (Truth hedge)
           \item Ha h => Ord (Truth h)
@@ -595,7 +629,15 @@ import Data.List
 This module defines the propositional fuzzy logic with truth
 values being the type defined in module HedgeTruth. Also provides
 some utilities to work with Literals and CNF clauses of this
-logic.
+logic.\\
+As described below, several utilites are concerned with sorting
+list of Literals. This is needed in order to easily test two
+CNF clauses for equality. The sorting order is ascending based on
+the String sentence in Literals, and if two String sentences are
+equal, sort based on the truth value instead.\\
+From here on out ``sorting list of Literals'' will by default
+mean ``sorting list of Literals'' using the above order unless it
+was explicitly said otherwise.
 \subsubsection{Internal Definition}
 \begin{itemize}
         \item data Lit hedge - A type representing Literals in this propositional fuzzy
@@ -605,7 +647,7 @@ logic.
                  \item  Lit String (Truth hedge) - Construct a
                          Literal from a string being its sentence and a truth value 
          \end{itemize}
-         {\bfseries Instances}
+         {\bfseries Instances of}
           \begin{itemize}
             \item Eq hedge => Eq (Lit hedge)
             \item Read hedge => Read (Lit hedge) 
@@ -623,21 +665,24 @@ logic.
          \item Show a => Show (CNF a)
         \end{itemize}
 
-        \item truthLit :: Lit t -> Truth t\\
+\item truthLit :: Lit String (Truth t) -> Truth t\\
                 Get the truth value of a Literal
-        \item stringLit :: Lit t -> String\\
+        \item stringLit :: Lit String (Truth t) -> String\\
                 Get the sentence of a Literal
         \item lsCNF :: CNF t -> [t]\\
                 Convert the disjunction back to a list of
                 Literals.
         \item negateLit :: Ha hedge => Lit hedge -> Lit hedge\\
                 Negate the truth value of a Literal
-        \item smartCNF :: Ha hedge => [Lit hedge] -> CNF (Lit hedge)
+        \item smartCNF :: Ha hedge => [Lit hedge] -> CNF (Lit
+                hedge)\\
                 Sorts the list of Literals before construct a
                 disjunction.
-        \item sortCNF :: Ha hedge => CNF (Lit hedge) -> CNF (Lit hedge)
+        \item sortCNF :: Ha hedge => CNF (Lit hedge) -> CNF (Lit
+                hedge)\\
                 Sort the Literals in a disjunction.
-        \item sortLits :: Ha hedge => [Lit hedge] -> [Lit hedge]
+        \item sortLits :: Ha hedge => [Lit hedge] -> [Lit
+                hedge]\\
                 Sort the Literals in a list of Literals.
 \end{itemize}
 
@@ -660,37 +705,78 @@ import ProsLogic
 import Debug.Trace
 \end{lstlisting}
 \subsubsection{Description}
-
+Implementation of the $\alpha-Resolution$ reasoning method.
 \subsubsection{Internal Definition}
-type Clause hedge = ([Lit hedge], Truth hedge)
+\begin{itemize}
+        \item type Clause hedge = ([Lit hedge], Truth hedge)\\
+                This type represents the Clause with confidence
+                described in the resolution section in
+                Theoretical Background chapter.
+        \item nilH :: Ha hedge => Lit hedge\\
+                This is the Nil literal, which is in turn used to 
+                represent the Nil clause.
+        \item smartClause :: Ha hedge => CNF (Lit hedge) -> Truth hedge ->
+                Clause hedge\\
+                Construct a Clause from a disjunction and a
+                confidence value. The list of Literals in
+                the disjunction is sorted .
+        \item confidence :: Ha h => Truth h -> Truth h -> Truth h -> Truth h ->
+                Truth h\\
+                Formula for calculating confidence value from two
+                clauses' confidence values and their resolved
+                Literals' truth values.
 
-nilH :: Ha hedge => Lit hedge
+        \item resolution' :: Ha hedge => [Clause hedge] ->
+        %[(Clause hedge, Clause hedge)] ->
+        [(Clause hedge, Clause hedge, Clause hedge)] -> [(String, Maybe t)] -> (Maybe (Truth
+        hedge), [(Clause hedge, Clause hedge, Clause hedge)])\\
+        The actual implementation of the $\alpha-Resolution$
+        reasoning method. It takes a list of Clause to perform
+        resolution on, an accummulated argument for the tracing
+        list, a list of all ``sentences'' in the knowledge base
+        and whether interpretation of each sentences is a
+        positive truth value or not. It returns the resulting
+        confidence value of the resolution process and the
+        tracing list.\\\\
+        The tracing list has the type of [(Clause hedge, Clause
+        hedge, Clause hedge)], with the first Clause in each
+        tuple being the resolvent, and the other two Clauses
+        being the resolved Clauses.\\\\
+        The list of all ``sentences'' and their interpretation's
+        positivity is needed to correctly reduce the new Clauses
+        obtained in the process of $\alpha-Resolution$, as
+        discussed in the Theoretical Background section. While
+        computing this list might sound costly, without it the
+        search space for $\alpha-Resolution$ will be much larger
+        and ultimately the whole process wil cost much more.\\        
+        This list obtained by performing a first-pass
+        classical resolution on the knowledge base, i.e we
+        consider the knowledge base as if it was in classical
+        propositional logic and perform normal resolution on it.
+        We only care about whether each sentence is ``True'' or
+        not, so this is sufficient.    
+        
 
-smartClause :: Ha hedge => CNF (Lit hedge) -> Truth hedge ->
-Clause hedge
 
-confidence :: Ha h => Truth h -> Truth h -> Truth h -> Truth h ->
-Truth h
-
-resolution :: Ha hedge => [Clause hedge] -> (Maybe
-(Truth hedge), [(Clause hedge, Clause hedge, Clause hedge)])
-
-resolution' :: Ha hedge => [Clause hedge] ->
-[(Clause hedge, Clause hedge)] ->
-[(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge), ([Lit
-hedge], Truth hedge))] -> [(String, Maybe t)] -> (Maybe (Truth
-hedge), [(([Lit hedge], Truth hedge), ([Lit hedge], Truth hedge),
-([Lit hedge], Truth hedge))])
-
+        \item resolution :: Ha hedge => [Clause hedge] -> (Maybe
+         (Truth hedge), [(Clause hedge, Clause hedge, Clause
+         hedge)])\\
+                The interfacial method for using
+                $\alpha-Resolution$. It takes a list of Clause
+                and returns the confidence value of the
+                resolution, and the tracing list to reconstruct
+                the proof if needed.\\
+                It is a wrapper around the
+                actual implementation resolution', initializing
+                some arguments of resolution' with appropriate
+                values. 
+\end{itemize}
 
 \subsection{Module Hio}
 \subsubsection{Import and Export:}
 \begin{lstlisting}
 module DBio.Hio(
   hManager,
-  hMMenu,
-  printPosH,
-  printNegH,
   ) where
 import SelfRestart
 import Util.UtilB
@@ -702,53 +788,81 @@ import SelfRestart(selfRestart,exitImmediately,ExitCode(..))
 import System.Environment(getProgName)
 \end{lstlisting}
 \subsubsection{Description}
-
+This module defines the procedures to work with the hedges
+definition in the knowledge base. 
 \subsubsection{Internal Definition}
-printlH :: IConnection conn => String -> conn -> IO ()
+\begin{itemize}
+        \item printlH :: IConnection conn => String -> conn -> IO
+                ()\\ Generic hedges list print
+              \begin{itemize}
+               \item printPosH :: IConnection conn => conn -> IO ()\\
+                     printNegH :: IConnection conn => conn -> IO ()\\
+                     Specialized printing procedures for positive
+                     and negative hedges lists.
+              \end{itemize}         
+             
+      \item removeH :: String -> String -> IO ()\\
+              Completely remove a hedge from the database
+      \item removelH :: String -> String -> String -> IO ()
+              Generic ``remove'' procedure to remove a hedge from
+              a list
+              \begin{itemize}
+               \item removePosH :: String -> String -> IO ()
+                     \\removeNegH :: String -> String -> IO ()\\
+                     Specialized remove procedures for positive
+                     and negative hedges lists
+              \end{itemize}
 
-printPosH :: IConnection conn => conn -> IO ()
+      \item addlH :: String -> String -> String -> String -> String -> IO ()
+            \\ Generic ``add new hedge'' procedure  
+      \begin{itemize}
+      \item addNegH :: String -> String -> String -> String -> IO ()
+          \\addPosH :: String -> String -> String -> String -> IO ()
+          \\ Specialized add procedures for positive
+            and negative hedges lists
+      \end{itemize}
 
-printNegH :: IConnection conn => conn -> IO ()
+      \item changeOrd :: String -> String -> String -> String -> IO ()
+              \\Generic ``change order of hedges'' procedure
+      \begin{itemize}
+      \item changePosOrd :: String -> String -> String -> IO ()
+         \\ changeNegOrd :: String -> String -> String -> IO ()
+         \\ Specialized change order procedures for positive and negative
+         hedges lists.
+      \end{itemize}
 
-removeH :: String -> String -> IO ()
+      \item renameHedge :: String -> String -> String -> IO ()
+       \\ rename a hedge in the database
 
-removelH :: String -> String -> String -> IO ()
+      \item addlRel :: String -> String -> String -> String -> IO ()
+              \\ Generic ``add new relation between hedges''
+              procedure
+      \begin{itemize}
+      \item addPosRel :: String -> String -> String -> IO ()
+          \\ addNegRel :: String -> String -> String -> IO ()
+         \\ Specialized add relation procedures for positive and negative
+         hedge relations lists.
+      \end{itemize}
 
-removePosH :: String -> String -> IO ()
+      \item removelRel :: String -> String -> String -> String -> IO ()
+              \\ Generic ``remove a relation between hedges''
+              procedure
+      \begin{itemize}
+      \item removePosRel :: String -> String -> String -> IO ()
+        \\  removeNegRel :: String -> String -> String -> IO ()
+         \\ Specialized remove relation procedures for positive and negative
+         hedge relations lists.
+      \end{itemize}
 
-removeNegH :: String -> String -> IO ()
-
-addlH :: String -> String -> String -> String -> String -> IO ()
-
-addNegH :: String -> String -> String -> String -> IO ()
-
-addPosH :: String -> String -> String -> String -> IO ()
-
-changeOrd :: String -> String -> String -> String -> IO ()
-
-changePosOrd :: String -> String -> String -> IO ()
-
-changeNegOrd :: String -> String -> String -> IO ()
-
-renameHedge :: String -> String -> String -> IO ()
-
-addlRel :: String -> String -> String -> String -> IO ()
-
-addPosRel :: String -> String -> String -> IO ()
-
-addNegRel :: String -> String -> String -> IO ()
-
-removelRel :: String -> String -> String -> String -> IO ()
-
-removePosRel :: String -> String -> String -> IO ()
-
-removeNegRel :: String -> String -> String -> IO ()
-
-hMMenu :: [String]
-
-hManager :: String -> IO ()
-
-printHedges :: String -> IO ()
+      \item hManager :: String -> IO ()\\
+              \\ The interactive interface for managing hedges.
+              This is the only exported procedure in this module,
+              and the functionalities of other procedures can
+              only be accessed through this procedure.
+      \item printHedges :: String -> IO ()\\
+              Print the hedge structure as currently defined in the
+              knowledge base.
+\end{itemize}
 \subsection{Module KBio}
 \subsubsection{Import and Export:}
 \begin{lstlisting}
@@ -922,4 +1036,548 @@ This module simply defines the main IO loop to interact with the
 user.
 %\subsubsection{Internal Definition}
 
+
+\section{Execution flow}
+\paragraph{} This section illustrates the execution of the
+system, structured by the flow of use cases. Each subsection will describe the 
+flow a use case of the system. 
+%-----------------------------------------------%
+\subsection{Open Knowledge Base}
+\begin{itemize}
+  \item {\bfseries Description:} This is the start-up use case.
+    The goal is to get the reasoning system up-and-running, with a
+    user-specified knowledge base loaded.   
+  \item {\bfseries Trigger:} The user invoke {\em runhaskell
+    Main.hs <dbname>} in the system's directory
+  \item {\bfseries Precondition:} The reasoning system is present and its
+    dependencies are all installed.    
+  \item {\bfseries Postcondition:} The reasoning system is
+    up-and-running, with a knowledge base loaded.
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item Start the reasoning system
+      \item Load the knowledge base
+      \item Generate Hedge algebra to use as defined in the
+        knowledge base
+      \item Enter mainloop, wait for user's command
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \\{\bfseries No hedge algebra defined in KB}
+    \begin{enumerate}
+      \item Ask if the user wants to define hedge algebra\\
+            \indent + If yes, trigger KB's hedge managing UC
+            Base\\
+            \indent + Otherwise, terminate the system
+    \end{enumerate}
+    {\bfseries No hedge algebra defined in KB}
+      \item Ask if the user wants to initialize new KB\\
+          \indent + If yes, trigger Initialize new KB UC\\
+          \indent + Otherwise, terminate the system
+
+  \item {\bfseries Exception Flow:}\\
+    {\bfseries Empty Argument}
+    \begin{enumerate}
+      \item Inform the user
+      \item Terminate the system
+    \end{enumerate}
+
+    {\bfseries Database Error}
+    \begin{enumerate}
+      \item Inform the user\\
+        \indent + If the user chooses to go to main menu anyway,
+          continue anyway
+        \indent + Otherwise, terminate the system      
+    \end{enumerate}
+
+\end{itemize}
+
+%---%
+\subsubsection{Extended use case: Initialize new Knowledge Base}
+\begin{itemize}
+  \item {\bfseries Description:} This use case's goal is to
+    initialize a new knowledge base.
+  \item {\bfseries Trigger:} The KB file the user specified is a
+    new file.
+  \item {\bfseries Precondition:} \\
+    \indent + Open Knowledge Base UC is triggered\\
+    \indent + The specified KB file is a new file
+  \item {\bfseries Postcondition:} KB initialized to the proper
+    schema    
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item Create tables as specified by the system's database
+        schema
+      \item Create the required triggers as specified in the
+        schema
+      \item Ask if the user wants to define a hedge algebra for
+        the KB right now\\
+        \indent + If yes, trigger KB's hedge managing UC\\
+        \indent + Otherwise, go back to the call site
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:} No alternative flow
+  \item {\bfseries Exception Flow:} No exception flow
+\end{itemize}
+\paragraph {Illustration}
+\begin{figure}[H]
+  \centering
+  \includegraphics[]{}
+  \caption{}
+\end{figure}
+%-----------------------------------------------%
+\subsection{Manage KB's hedges}
+
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Print HA structure}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Add positive/negative hedge}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Remove positive/negative hedge}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Edit positive/negative hedge's precedence}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Remove hedge}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Rename hedge}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Add positive/negative hedges relation}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Remove positive/negative hedges relation}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+%-----------------------------------------------%
+\subsection{Manage KB's clauses}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Add clause}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Remove clause}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Edit clause}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Check consistency}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Print KB}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+
+%-----------------------------------------------%
+\subsection{Prove proposition}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Explain proof result}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+%-----------------------------------------------%
+\subsection{Exit}
+\begin{itemize}
+  \item {\bfseries Description:} 
+  \item {\bfseries Trigger:}
+  \item {\bfseries Precondition:} The reasoning system and its
+    dependency is installed
+    
+  \item {\bfseries Postcondition:}
+
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    \begin{enumerate}
+      \item 1
+      \item 2
+    \end{enumerate}
+\end{itemize}
+%\subsection 
 \end{document}
