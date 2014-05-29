@@ -124,15 +124,111 @@ between data of the system}
 \subsubsection{Database schema}
 \paragraph{}
 
-\begin{figure}[H]
-\includegraphics[clip=true, trim = 90 0 0 0,
-scale=0.8,page=1]{part2/DataModel}
-\end{figure}
-\begin{figure}[H]
-\includegraphics[clip=true, trim = 90 200 0 0,
-scale=0.8,page=2]{part2/DataModel}
-\caption{Database schema of the system}
-\end{figure}
+%\begin{figure}[H]
+%\includegraphics[clip=true, trim = 90 0 0 0,
+%scale=0.8,page=1]{part2/DataModel}
+%\end{figure}
+%\begin{figure}[H]
+%\includegraphics[clip=true, trim = 90 200 0 0,
+%scale=0.8,page=2]{part2/DataModel}
+%\caption{Database schema of the system}
+%\end{figure}
+
+\begin{table}[H]
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+      No & Column name & Private key & Foreign key & Unique & Data type   & Description   \\ \hline
+      1  & HID         & X           & ~           & X      & Numeric     & ID of a hedge \\ \hline
+      2  & Name        & ~           & ~           & X      & Varchar(60) & Hedge name    \\ \hline
+\end{tabular}
+\caption {Table hedges}
+\end{table}
+
+\begin{table}[H]
+        \begin{tabular}{|l|c|c|c|c|c|p{2cm}|}
+    \hline
+    No & Column name & Private key & Foreign key & Unique & Data type & Description           \\ \hline
+    1  & HID         & ~           & X           & X      & Numeric   & ID of a hedge         \\ \hline
+    2  & precedence  & ~           & ~           & X      & Numeric   & For determining order \\ \hline
+    \end{tabular}
+    \caption {Table posl (Positive hedge list)}
+\end{table}
+
+\begin{table}[H]
+        \begin{tabular}{|l|c|c|c|c|c|p{2cm}|}
+    \hline
+    No & Column name & Private key & Foreign key & Unique & Data type & Description           \\ \hline
+    1  & HID         & ~           & X           & X      & Numeric   & ID of a hedge         \\ \hline
+    2  & precedence  & ~           & ~           & X      & Numeric   & For determining order \\ \hline
+    \end{tabular}
+    \caption {Table negl (Negative hedge list)}
+\end{table}
+
+\begin{table}[H]
+        \begin{tabular}{|l|c|c|c|c|c|p{2cm}|}
+    \hline
+    No & Column name & Private key & Foreign key & Unique & Data type & Description           \\ \hline
+    1  & HID1        & ~           & X           & ~      & Numeric   & ID of affecting hedge \\ \hline
+    2  & HID2        & ~           & X           & ~      & Numeric   & ID of affected hedge  \\ \hline
+    \end{tabular}
+    \caption {Table posrel (Positive relation matrix)}
+\end{table}
+
+\begin{table}[H]
+        \begin{tabular}{|l|c|c|c|c|c|p{2cm}|}
+    \hline
+    No & Column name & Private key & Foreign key & Unique & Data type & Description           \\ \hline
+    1  & HID1        & ~           & X           & ~      & Numeric   & ID of affecting hedge \\ \hline
+    2  & HID2        & ~           & X           & ~      & Numeric   & ID of affected hedge  \\ \hline
+    \end{tabular}
+    \caption {Table negrel (Negative relation matrix)}
+\end{table}
+
+\begin{table}[H]
+        \begin{tabular}{|l|c|c|c|c|c|p{2cm}|}
+    \hline
+    No & Column name & Private key & Foreign key & Unique & Data type    & Description    \\ \hline
+    1  & CID         & X           & ~           & X      & Numeric      & ID of a Clause \\ \hline
+    2  & label       & ~           & ~           & ~      & Varchar(256) & Optional label \\ \hline
+    \end{tabular}
+    \caption {Table conj (Clauses of the knowledge base )}
+\end{table}
+
+\begin{table}[H]
+        \begin{tabular}{|l|c|c|c|c|c|p{2cm}|}
+    \hline
+    No & Column name & Private key & Foreign key & Unique & Data type    & Description                           \\ \hline
+    1  & LID         & X           & ~           & X      & Numeric      & ID of a literal                       \\ \hline
+    2  & sentence    & ~           & ~           & ~      & Varchar(256) & literal's sentence                    \\ \hline
+    3  & SID         & ~           & X           & ~      & Numeric      & ID of a hedge string                  \\ \hline
+    4  & genterm     & ~           & ~           & ~      & Varchar(20)  & A fuzzy truth value's generator term \\ \hline
+    \end{tabular}
+    \caption {Table literal (Literals of the clauses of the knowledge base )}
+\end{table}
+
+\begin{table}[H]
+        \begin{tabular}{|l|c|c|c|c|c|p{2cm}|}
+    \hline
+    No & Column name & Private key & Foreign key & Unique & Data type & Description     \\ \hline
+    1  & CID         & X           & X           & ~      & Numeric   & ID of a Clause  \\ \hline
+    2  & LID         & X           & X           & ~      & Numeric   & ID of a literal \\ \hline
+    \end{tabular}
+    \caption {Table conjLits (Literals - Clauses many-to-many relationship)}
+\end{table}
+
+
+\begin{table}[H]
+                \begin{tabular}{|l|c|c|c|c|c|p{2cm}|}
+    \hline
+    No & Column name & Private key & Foreign key & Unique & Data type & Description                                    \\ \hline
+    1  & SID         & X           & ~           & X      & Numeric   & ID of a hedge string                           \\ \hline
+    2  & HID         & ~           & X           & ~      &
+    Numeric   & \parbox{2cm}{ID of \\the `head'\\ hedge of \\this
+    hedge string} \\ \hline
+    3  & tail        & X           & X           & ~      & Numeric   & ID of the `tail' hedge string                 \\ \hline
+    \end{tabular}
+    \caption {Table hstring (hedges in truth value of literals)}
+\end{table}
 
 \paragraph{hedges and positive/negative tables:}
 The hedges table containing all hedges that was defined in the database, but
@@ -213,17 +309,18 @@ of its truth value.
 \paragraph{} There are three main use cases:
 \begin{itemize}
   \item {\bfseries Prove} concerns with using the system to prove
-    a proposition w.r.t. to a KB. This UC extends to Explain UC,
+    a proposition w.r.t. to a KB. This use case extends to
+    Explain use case,
     which concerns with explaining the proof.    
   \item {\bfseries Managing KB's hedges} concerns with using the
-    system to managing the hedge algebra of a KB. This UC
+    system to managing the hedge algebra of a KB. This use case
     includes add/edit/remove use cases for each hedges list, for
     for positive and negative relations and print specification
     about the hedge algebra.
   \item {\bfseries Managing KB's clauses} concerns with using the
-    system to managing the knowledge base. This UC includes
+    system to managing the knowledge base. This use case includes
     add/remove/edit use cases for clauses, print KB, and check
-    for KB's consistency UCs.    
+    for KB's consistency usecases.    
 \end{itemize}
 \paragraph{} Each use case will be discussed in more detail in
 the {\bfseries Execution Flow} section.
@@ -247,11 +344,11 @@ the {\bfseries Execution Flow} section.
 \includegraphics[scale=0.78]{part2/_Modules}
 \caption{Module dependency graph}
 \end{figure}
-\paragraph{}For reference purpose, below is the full dependency
+\paragraph{}For reference purpose, below is the complete dependency
 graph of the system, including the external libraries used.
 \begin{figure}[H]
 \includegraphics[width=450pt, height=600pt]{part2/Modules}
-\caption{full dependency graph}
+\caption{Complete dependency graph}
 \end{figure}
 
 \paragraph{} Reflecting the specification, the system is decomposed
@@ -696,8 +793,7 @@ module AlphaResolution (
         resolution,
         nilH,
         Clause(..)
-)
-where
+) where
 import Data.List
 import HedgeClass
 import HedgeTruth
@@ -866,46 +962,81 @@ definition in the knowledge base.
 \subsection{Module KBio}
 \subsubsection{Import and Export:}
 \begin{lstlisting}
-module DBio.KBio 
-where
+module DBio.KBio (
+        cmenu,
+        kbManager,
+        parseGoals,
+        getCNF) where
 import ProsLogic
 import Hedgen.Ahedge
 import AlphaResolution
 import Util.UtilA
 \end{lstlisting}
 \subsubsection{Description}
-
+This module provides the procedures to work with the knowledge
+base's clauses, which internally have to process other entities
+in the database that are hidden to the end user e.g. literals, hedge
+strings, literals-clauses relationship.
 \subsubsection{Internal Definition}
-sid\_to\_hstring :: FilePath -> SqlValue -> IO [String]
+\begin{itemize}
+        \item sid\_to\_hstring :: FilePath -> SqlValue -> IO
+                [String]\\
+                Transform a database's SID into its equivalent
+                sequence of hedge name. This is used by the reasoning
+                system to regenerate the truth value of a
+                literal.                
+        \item hStringtoHid :: String -> [String] -> IO (Maybe
+                [SqlValue])\\
+                Transform a sequence of hedge names to the equivalent
+                list of database's HID, which is in turn used by find\_sid to
+                recreate SID from a sequence of hedge names.
+        \item find\_sid :: IConnection conn => conn -> ([SqlValue], SqlValue,
+                 [SqlValue]) -> IO ([SqlValue], SqlValue,
+                 [SqlValue])\\
+                 Find the equivalent SID of a sequence of HID.
+        \item insert\_if\_not\_exist\_sid :: String -> [Char] -> IO (Maybe
+                 SqlValue)\\
+                 Insert a SID for a string of hedges, if that
+                 hasn't existed yet. Return the inserted SID or
+                 Nothing.
+        \item getCid :: String -> IO [String]\\
+                Get a list of all CIDs in the database. This is
+                used by getCNF to retrieve the list of all
+                clauses in the database.
+        \item getCNF :: String -> IO [CNF (Lit Hedge)]\\
+                Retrieve the list of all clauses in the database
+        \item parseGoal :: String -> Lit Hedge\\
+                Parse a string into a Literal.
+        \item parseGoals :: String -> [Lit Hedge]\\
+                Apply parseGoal on a string of literals'
+                representations, and parse it into a list of
+                Literals.
+        \item parseInpClause :: String -> [[String]]\\
+                Break an input clause into a list of
+                representations for its literals, each literal
+                in turn is splitted into its sentence/symbol, its
+                hedges string and its truth generating term.
+        \item changeByCID :: String -> String -> String -> IO
+                ()\\
+                Change a clause by its CID.
+        \item changeClause :: String -> [Char] -> String -> IO
+                ()\\
+                Change a clause by its formula. Internally use
+                changeByCid
+        \item deleteByCID :: String -> String -> IO ()\\
+                Delete a clause by its CID
+        \item deleteClause :: String -> [Char] -> IO ()\\
+                Delete a clause by its formula. Internally use
+                deleteByCID.
+        \item addClause :: String -> [Char] -> IO ()\\
+                Add a new clause by its formula
+        \item kbManager :: String -> IO ()\\
+                Interactive loop for knowledge base management
+                use case
+        \item cmenu :: [String] \\
+                Menu for kbManager
 
-hStringtoHid :: String -> [String] -> IO (Maybe [SqlValue])
-
-find\_sid :: IConnection conn => conn -> ([SqlValue], SqlValue,
-[SqlValue]) -> IO ([SqlValue], SqlValue, [SqlValue])
-
-insert\_if\_not\_exist\_sid :: String -> [Char] -> IO (Maybe
-SqlValue)
-
-getCid :: String -> IO [String]
-
-getCNF :: String -> IO [CNF (Lit Hedge)]
-
-parseGoal :: String -> Lit Hedge
-
-parseGoals :: String -> [Lit Hedge]
-
-parseInpClause :: [Char] -> [[[Char]]]
-
-changeByCID :: String -> String -> String -> IO ()
-
-changeClause :: String -> [Char] -> String -> IO ()
-
-deleteByCID :: String -> String -> IO ()
-
-deleteClause :: String -> [Char] -> IO ()
-
-addClause :: String -> [Char] -> IO ()
-
+\end{itemize}
 \subsection{Module UtilA}
 \subsubsection{Import and Export:}
 \begin{lstlisting}
@@ -1042,13 +1173,20 @@ user.
 system, structured by the flow of use cases. Each subsection will describe the 
 flow a use case of the system. 
 %-----------------------------------------------%
-\subsection{Open Knowledge Base}
+\subsection{Invoke Reasoning System}
 \begin{itemize}
   \item {\bfseries Description:} This is the start-up use case.
     The goal is to get the reasoning system up-and-running, with a
     user-specified knowledge base loaded.   
   \item {\bfseries Trigger:} The user invoke {\em runhaskell
     Main.hs <dbname>} in the system's directory
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/openKB1}
+  \caption{Illustration: invoking the reasoning system}
+\end{figure}
+
   \item {\bfseries Precondition:} The reasoning system is present and its
     dependencies are all installed.    
   \item {\bfseries Postcondition:} The reasoning system is
@@ -1059,29 +1197,38 @@ flow a use case of the system.
       \item Load the knowledge base
       \item Generate Hedge algebra to use as defined in the
         knowledge base
-      \item Enter mainloop, wait for user's command
+      \item Enter main interactive loop, wait for user's
+        command\\
+        \indent + Trigger use case according to user's command
+        \indent + Terminate the system if user chooses to do so
     \end{enumerate}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/mainloop}
+  \caption{Illustration: The main interactive loop of reasoning system}
+\end{figure}
   \item {\bfseries Alternative Flow:}
-    \\{\bfseries No hedge algebra defined in KB}
+    \\{\em No hedge algebra defined in KB}
     \begin{enumerate}
       \item Ask if the user wants to define hedge algebra\\
-            \indent + If yes, trigger KB's hedge managing UC
+            \indent + If yes, trigger KB's hedge managing use
+            case 
             Base\\
             \indent + Otherwise, terminate the system
     \end{enumerate}
-    {\bfseries No hedge algebra defined in KB}
+    {\em No hedge algebra defined in KB}
       \item Ask if the user wants to initialize new KB\\
-          \indent + If yes, trigger Initialize new KB UC\\
+          \indent + If yes, trigger Initialize new KB use case\\
           \indent + Otherwise, terminate the system
 
   \item {\bfseries Exception Flow:}\\
-    {\bfseries Empty Argument}
+    {\em Empty Argument}
     \begin{enumerate}
       \item Inform the user
       \item Terminate the system
     \end{enumerate}
 
-    {\bfseries Database Error}
+    {\em Database Error}
     \begin{enumerate}
       \item Inform the user\\
         \indent + If the user chooses to go to main menu anyway,
@@ -1099,7 +1246,7 @@ flow a use case of the system.
   \item {\bfseries Trigger:} The KB file the user specified is a
     new file.
   \item {\bfseries Precondition:} \\
-    \indent + Open Knowledge Base UC is triggered\\
+    \indent + Invoke Reasoning System is triggered\\
     \indent + The specified KB file is a new file
   \item {\bfseries Postcondition:} KB initialized to the proper
     schema    
@@ -1111,473 +1258,743 @@ flow a use case of the system.
         schema
       \item Ask if the user wants to define a hedge algebra for
         the KB right now\\
-        \indent + If yes, trigger KB's hedge managing UC\\
+        \indent + If yes, trigger KB's hedge managing use case\\
         \indent + Otherwise, go back to the call site
     \end{enumerate}
-  \item {\bfseries Alternative Flow:} No alternative flow
-  \item {\bfseries Exception Flow:} No exception flow
+  \item {\bfseries Alternative Flow:} {\em No alternative flow}
+  \item {\bfseries Exception Flow:} {\em No exception flow}
 \end{itemize}
-\paragraph {Illustration}
-\begin{figure}[H]
-  \centering
-  \includegraphics[]{}
-  \caption{}
-\end{figure}
-%-----------------------------------------------%
-\subsection{Manage KB's hedges}
 
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
-  \item {\bfseries Normal Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-\end{itemize}
-\subsubsection{Print HA structure}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
-  \item {\bfseries Normal Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-\end{itemize}
-\subsubsection{Add positive/negative hedge}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
-  \item {\bfseries Normal Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-\end{itemize}
-\subsubsection{Remove positive/negative hedge}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
-  \item {\bfseries Normal Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-\end{itemize}
-\subsubsection{Edit positive/negative hedge's precedence}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
-  \item {\bfseries Normal Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-\end{itemize}
-\subsubsection{Remove hedge}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
-  \item {\bfseries Normal Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-\end{itemize}
-\subsubsection{Rename hedge}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
-  \item {\bfseries Normal Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-\end{itemize}
-\subsubsection{Add positive/negative hedges relation}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
-  \item {\bfseries Normal Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-\end{itemize}
-\subsubsection{Remove positive/negative hedges relation}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
-  \item {\bfseries Normal Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-\end{itemize}
 %-----------------------------------------------%
 \subsection{Manage KB's clauses}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/kb-manager}
+  \caption{Illustration: Manage KB's clauses interactive loop}
+\end{figure}
 \begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
+  \item {\bfseries Description:} This use case consists of a set
+    of standard database management functionalities, 
+    including add/remove/edit/view operations. Since this system
+    works with knowledge base, logical consistency is vital,
+    so additionally there is also a Check consistency use case
+    for this purpose.\\
+    The Hedge structure use case is not
+    important and will not be discussed here, but it is useful for 
+    quick reference of the underlying
+    hedge algebra when working with clauses. This is however a
+    little bit different from the Print HA structure use case extending
+    Managing KB's hedges use case, since the latter only print
+    the hedge algebra as defined in the knowledge base, while the
+    former also concerns with the hedge algebra as being used by
+    the reasoning system. These two definition could have mismatch
+    at runtime if the maintainer after updated the hedge algebra
+    definition somehow still decided to keep on using the old
+    definition for the session.
+  \item {\bfseries Trigger:} User choose ``kb manager'' from the
+    main loop
+  \item {\bfseries Precondition:} The system is up and running
+    with a knowledge base loaded    
+  \item {\bfseries Postcondition:} Zero or more knowledge base management
+    actions with persistent effect on the knowledge base performed
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item User trigger the use case
+      \item Waiting for user's command\\
+      \indent + Trigger an extended use case base according to
+      user's command\\
+      \indent + Go back to main loop if user chooses to do so
+      \item Go back to 1
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}\\
+    {\em Unrecognized command}\\
+    \indent + Inform the user\\
+    \indent + Back to wait for user's command
+  \item {\bfseries Exception Flow:} {\em No Exception Flow}
+\end{itemize}
+%-----------------------------------------%
+\subsubsection{Extended use case: Add clause}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/add-clause}
+  \caption{Illustration: Add clause use case}
+\end{figure}
+\begin{itemize}
+  \item {\bfseries Description:} Add a new clause into the
+    knowledge base. The clause must be a disjunction of literals.
+  \item {\bfseries Trigger:} User chose ``add clause'' command in
+    Manage KB's clauses use case
+  \item {\bfseries Precondition:} Manage KB's clauses triggered.
+  \item {\bfseries Postcondition:} A new clause added unless it
+    was already in the knowledge base, or it was not valid    
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item User chose Add clause
+      \item The system asks user for the clause\\
+        \indent + If the clause is in the KB already, inform the
+        user and do nothing   \\
+        \indent + Otherwise, add the clause to the KB        
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    {\em Clause is not in proper format}
+    \begin{enumerate}
+      \item Inform the user
+      \item Back to parent use case
+    \end{enumerate}
+    {\em Clause has unrecognized linguistic truth value}
+    \begin{enumerate}
+      \item Inform the user
+      \item Back to parent use case
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    {\em Database Error}
+    \begin{enumerate}
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
+    \end{enumerate}
+\end{itemize}
+%--------------%
+\subsubsection{Extended use case: Remove clause}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/rm-clause}
+  \caption{Illustration: Remove clause use case}
+\end{figure}
+\begin{itemize}
+  \item {\bfseries Description:} Specify a clause and remove it from the
+    knowledge base. The input clause must be a disjunction of literals.
+  \item {\bfseries Trigger:} User chose ``rm clause'' command in
+    Manage KB's clauses use case
+  \item {\bfseries Precondition:} Manage KB's clauses triggered.
+  \item {\bfseries Postcondition:} A clause removed unless it
+    was already not the knowledge base, or the input is invalid   
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item User chose Remove clause
+      \item The system asks user for the clause\\
+        \indent + If the clause is not the KB, inform the
+        user and do nothing   \\
+        \indent + Otherwise, remove the clause from the KB        
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    {\em Clause is not in proper format}
+    \begin{enumerate}
+      \item Inform the user
+      \item Back to parent use case
+    \end{enumerate}
+    {\em Clause has unrecognized linguistic truth value}
+    \begin{enumerate}
+      \item Inform the user
+      \item Back to parent use case
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    {\em Database Error}
+    \begin{enumerate}
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
+    \end{enumerate}
+\end{itemize}
+\subsubsection{Extended use case: Edit clause}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/change-clause}
+  \caption{Illustration: Edit Clause use case}
+\end{figure}
+\begin{itemize}
+  \item {\bfseries Description:} Edit a clause in the
+    knowledge base. The modified clause must be a disjunction of literals.
+  \item {\bfseries Trigger:} User chose ``change clause'' command in
+    Manage KB's clauses use case
+  \item {\bfseries Precondition:} Manage KB's clauses triggered.
+  \item {\bfseries Postcondition:} A clause is edited unless it
+    was already not the knowledge base, or the input was not
+    valid
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item User chose Edit clause
+      \item The system asks user for the old clause\\
+      \item The system asks user for the modified clause\\
+        \indent + If the clause is not in the KB, inform the
+        user and do nothing   \\
+        \indent + If the new clause is in the KB, inform the user
+        and do nothing\\
+        \indent + Otherwise, modify the clause to the new clause        
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:}
+    {\em Clause is not in proper format}
+    \begin{enumerate}
+      \item Inform the user
+      \item Back to parent use case
+    \end{enumerate}
+    {\em Clause has unrecognized linguistic truth value}
+    \begin{enumerate}
+      \item Inform the user
+      \item Back to parent use case
+    \end{enumerate}
+  \item {\bfseries Exception Flow:}
+    {\em Database Error}
+    \begin{enumerate}
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
+    \end{enumerate}
+\end{itemize}
+
+\subsubsection{Extended use case: Check consistency}
+\begin{itemize}
+  \item {\bfseries Description:} Checking for the logical
+    consistency of the knowledge base, and report to the user.
+  \item {\bfseries Trigger:} User chose ``check'' command in
+    Manage KB's Clause use case
+  \item {\bfseries Precondition:} Manage KB's clauses triggered.    
+  \item {\bfseries Postcondition:} The KB is checked, and its
+    consistency status is reported.
 
   \item {\bfseries Normal Flow:}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item User chose Check consistency
+      \item The system perform $\alpha-Resolution$ on the KB to
+        investigate its consistency status
+      \item Report the consistency status of the KB  
     \end{enumerate}
-  \item {\bfseries Alternative Flow:}
+  \item {\bfseries Alternative Flow:} {\em No Alternative Flow}
+  \item {\bfseries Exception Flow:} 
+    {\em Database Error}
     \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
     \end{enumerate}
 \end{itemize}
-\subsubsection{Add clause}
+\subsubsection{Extended use case: Print KB}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/printkb}
+  \caption{Illustration: Print KB use case}
+\end{figure}
 \begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
+  \item {\bfseries Description:} Let the user view the knowledge
+    base
+  \item {\bfseries Trigger:} User chose ``print KB'' in the
+    Manage KB's Clause use case
+  \item {\bfseries Precondition:} Manage KB's clauses triggered.    
+  \item {\bfseries Postcondition:} KB is printed.
   \item {\bfseries Normal Flow:}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item User chose Print KB
+      \item The system print the KB
     \end{enumerate}
-  \item {\bfseries Alternative Flow:}
+  \item {\bfseries Alternative Flow:} {\em No Alternative Flow}
+  \item {\bfseries Exception Flow:} 
+    {\em Database Error}
     \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
     \end{enumerate}
 \end{itemize}
-\subsubsection{Remove clause}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
 
+%-----------------------------------------------%
+\subsection{Manage KB's hedges}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/hedge-manager}
+  \caption{Illustration: Manage KB's clauses interactive loop}
+\end{figure}
+\begin{itemize}
+  \item {\bfseries Description:} This use case consists of a set
+    of operations to define and maintain the hedge algebra
+    underlying the knowledge base.
+  \item {\bfseries Trigger:} User chose ``hedge manager'' in the
+    main interactive loop
+  \item {\bfseries Precondition:} The system is up and running
+    with a knowledge base loaded    
+  \item {\bfseries Postcondition:} Zero or more hedges management
+    actions with persistent effect on the knowledge base performed
   \item {\bfseries Normal Flow:}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item User trigger the use case
+      \item Waiting for user's command\\
+      \indent + Trigger an extended use case base according to
+      user's command\\
+      \indent + Go back to the call site and do not reload the
+      updated hedge definition for the executing system yet if
+      the user chose ``quit''
+      \indent + reload the updated hedge definition for the executing system and 
+      go back if the user chose ``reload''
+      
+      \item Go back to 1
     \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
+  \item {\bfseries Alternative Flow:}\\
+    {\em Unrecognized command}\\
+    \indent + Inform the user\\
+    \indent + Back to wait for user's command
+  \item {\bfseries Exception Flow:} {\em No Exception Flow}
 \end{itemize}
-\subsubsection{Edit clause}
+\subsubsection{Extended use case: Print HA structure}
 \begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
+  \item {\bfseries Description:} Let the user view the knowledge
+    base's hedge algebra structure
+  \item {\bfseries Trigger:} User chose ``print'' in the
+    Manage KB's hedges use case
+  \item {\bfseries Precondition:} Manage KB's hedges triggered.    
+  \item {\bfseries Postcondition:} KB's hedge algebra structure is printed.
   \item {\bfseries Normal Flow:}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item User chose Print HA structure
+      \item The system print the structure
     \end{enumerate}
-  \item {\bfseries Alternative Flow:}
+  \item {\bfseries Alternative Flow:} {\em No Alternative Flow}
+  \item {\bfseries Exception Flow:} 
+    {\em Database Error}
     \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
     \end{enumerate}
 \end{itemize}
-\subsubsection{Check consistency}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
 
+\subsubsection{Extended use case: Add positive/negative hedge}
+\begin{itemize}
+  \item {\bfseries Description:} Add a hedge into the
+    positive/negative list. The hedge may or may not already
+    exist.
+  \item {\bfseries Trigger:} User chose ``add positive'' or
+    ``add negative'' command in
+    Manage KB's hedges use case
+  \item {\bfseries Precondition:} Manage KB's hedges triggered.
+  \item {\bfseries Postcondition:}\\
+    \indent + The hedge is added to the KB if it was not already
+    added.
+    \indent + The hedge is added to the list unless it
+    was already in the list
+    \indent + The hedge is moved from the other list to this list
+    if it was already in the other list
   \item {\bfseries Normal Flow:}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item User chose Add positive/negative hedge 
+      \item The system asks user for the hedge\\
+        \indent + If the hedge is in the list already, inform the
+        user and do nothing   \\
+        \indent + If the hedge is not in the KB, add the hedge to
+        the KB, then add it to the list
+        \indent + If the hedge is in the other list, move it to
+        this list
     \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
+  \item {\bfseries Alternative Flow:} {\em No alternative flow}
   \item {\bfseries Exception Flow:}
+    {\em Database Error}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
     \end{enumerate}
 \end{itemize}
-\subsubsection{Print KB}
-\begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
 
+\subsubsection{Extended use case: Remove positive/negative hedge}
+\begin{itemize}
+  \item {\bfseries Description:} Remove a hedge from the
+    positive/negative list. 
+  \item {\bfseries Trigger:} User chose ``rm positive'' or
+    ``rm negative'' command in
+    Manage KB's hedges use case
+  \item {\bfseries Precondition:} Manage KB's hedges triggered.
+  \item {\bfseries Postcondition:} The hedge is removed from the
+    list if it was there, or nothing happens.
   \item {\bfseries Normal Flow:}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item User chose rm positive/negative hedge 
+      \item The system asks user for the hedge\\
+        \indent + If the hedge is in the list, remove it 
+        \indent + Otherwise, do nothing.
     \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
+  \item {\bfseries Alternative Flow:} {\em No alternative flow}
   \item {\bfseries Exception Flow:}
+    {\em Database Error}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
     \end{enumerate}
 \end{itemize}
+
+\subsubsection{Extended use case: Edit positive/negative hedge's precedence}
+\begin{itemize}
+  \item {\bfseries Description:} Edit the order of hedges precedence in the
+    positive/negative list. 
+  \item {\bfseries Trigger:} User chose ``mv positive'' or
+    ``mv negative'' command in
+    Manage KB's hedges use case
+  \item {\bfseries Precondition:} Manage KB's hedges triggered.
+  \item {\bfseries Postcondition:} The chosen hedge's position in
+    the list changed. Other hedges' precedences are also changed
+    accordingly in respect with the new order.
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item User chose Edit positive/negative hedge's precedence
+      \item The system asks user for the hedge\\
+        \indent + If the hedge is in the list\\
+        \indent\indent + move it to the new position accordingly
+        to its new precedence
+        \indent\indent + the database's triggers are activated to
+        take care of maintaining the order
+        \indent + Otherwise, do nothing.
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:} {\em No alternative flow}
+  \item {\bfseries Exception Flow:}
+    {\em Database Error}
+    \begin{enumerate}
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
+    \end{enumerate}
+\end{itemize}
+
+\subsubsection{Extended use case: Rename hedge}
+\begin{itemize}
+  \item {\bfseries Description:} Edit the name of the hedge in the
+    knowledge base. 
+  \item {\bfseries Trigger:} User chose ``rename hedge'' command in
+    Manage KB's hedges use case
+  \item {\bfseries Precondition:} Manage KB's hedges triggered.
+  \item {\bfseries Postcondition:} The chosen hedge's name is
+    changed unless its new name has already existed, or the hedge
+    itself is not in the knowledge base.
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item User chose Rename hedge
+      \item The system asks user for the hedge and its new name\\
+        \indent + If the hedge is in the list, and the new name
+        is not occupied, rename it to the new name      
+        \indent + Otherwise, do nothing.
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:} {\em No alternative flow}
+  \item {\bfseries Exception Flow:}
+    {\em Database Error}
+    \begin{enumerate}
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
+    \end{enumerate}
+\end{itemize}
+
+\subsubsection{Extended use case: Add positive/negative hedges relation}
+\begin{itemize}
+  \item {\bfseries Description:} Add a positive/negative relation
+    between two hedges into the
+    positive/negative relation list. 
+  \item {\bfseries Trigger:} User chose ``add positive relation'' or
+    ``add negative relation'' command in
+    Manage KB's hedges use case
+  \item {\bfseries Precondition:} Manage KB's hedges triggered.
+  \item {\bfseries Postcondition:}\\
+    \indent + The relation is added to the list, and the other
+    list will be recalculated to maintain consistency.    
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item User chose Add positive/negative relation 
+      \item The system asks user for the two hedge\\
+        \indent + If at least one of the hedges is not in either
+        positive or negative list, inform the
+        user and do nothing
+        \indent + Otherwise, add the relation to the respective
+        relation list, and recalculate the other list to maintain
+        consistency
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:} {\em No alternative flow}
+  \item {\bfseries Exception Flow:}
+    {\em Database Error}
+    \begin{enumerate}
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
+    \end{enumerate}
+\end{itemize}
+
+
+\subsubsection{Extended use case: Remove positive/negative hedges relation}
+\begin{itemize}
+  \item {\bfseries Description:} Remove a positive/negative relation
+    between two hedges into the
+    positive/negative relation list. 
+  \item {\bfseries Trigger:} User chose ``rm positive relation'' or
+    ``rm negative relation'' command in
+    Manage KB's hedges use case
+  \item {\bfseries Precondition:} Manage KB's hedges triggered.
+  \item {\bfseries Postcondition:}\\
+    \indent + If the relation is in the list, it will be removed from the list, and the other
+    list will be recalculated to maintain consistency.    
+    \indent + Otherwise, nothing happens
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item User chose Remove positive/negative relation 
+      \item The system asks user for the two hedges\\
+        \indent + If at least one of the hedges is not in either
+        positive or negative list, inform the
+        user and do nothing
+        \indent + If the relation is not in the list, inform the
+        user and do nothing
+        \indent + Otherwise, remove the relation from the respective
+        relation list, and recalculate the other list to maintain
+        consistency
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:} {\em No alternative flow}
+  \item {\bfseries Exception Flow:}
+    {\em Database Error}
+    \begin{enumerate}
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
+    \end{enumerate}
+\end{itemize}
+
+
+\subsubsection{Extended use case: Remove hedge}
+\begin{itemize}
+  \item {\bfseries Description:} Remove a hedge from the
+    knowledge base. 
+  \item {\bfseries Trigger:} User chose ``rm hedge''
+    command command in
+    Manage KB's hedges use case
+  \item {\bfseries Precondition:} Manage KB's hedges triggered.
+  \item {\bfseries Postcondition:} The hedge and all of its
+    related information are removed from the
+    knowledge base if it was there, or nothing happens.
+  \item {\bfseries Normal Flow:}
+    \begin{enumerate}
+      \item User chose Remove hedge 
+      \item The system asks user for the hedge\\
+        \indent + If the hedge is in the knowledge base\\
+        \indent\indent + Trigger Remove positive relation use
+        case\\
+        \indent\indent + Trigger Remove negative relation use
+        case\\
+        \indent\indent + Trigger Remove positive hedge use
+        case\\
+        \indent\indent + Trigger Remove negative hedge use
+        case\\
+        \indent + Otherwise, do nothing.
+    \end{enumerate}
+  \item {\bfseries Alternative Flow:} {\em No alternative flow}
+  \item {\bfseries Exception Flow:}
+    {\em Database Error}
+    \begin{enumerate}
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
+    \end{enumerate}
+\end{itemize}
+
+
 
 %-----------------------------------------------%
 \subsection{Prove proposition}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/unprovable}
+  \caption{Illustration: Prove proposition: unprovable case}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/provable}
+  \caption{Illustration: Prove proposition: provable case}
+\end{figure}
 \begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
+  \item {\bfseries Description:} Let the user query for the
+    confidence of a proposition. The proposition must be a
+    conjunction of literals.   
+  \item {\bfseries Trigger:} User chose ``prove'' from the main
+    interactive loop
+  \item {\bfseries Precondition:} The reasoning system is up and
+    running with a knowledge base loaded.
     
-  \item {\bfseries Postcondition:}
+  \item {\bfseries Postcondition:} A confidence value is printed
+    if the proposition is valid, or ``Nothing'' is printed if the
+    it is not provable (not necessarily false)
 
   \item {\bfseries Normal Flow:}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item User chose Prove proposition
+      \item The system asks for a proposition to prove\\
+      \indent + If the proposition is not valid, inform the user
+      and go back to main loop
+      \indent + Otherwise, ask if the user wants the system to
+      explain the result or not
+      \indent\indent + Use $\alpha-Resolution$ on the KB and the
+      proposition
+      \indent\indent + Print the confidence value if the
+      proposition is provable, or ``Nothing'' otherwise.
+    \item Go back to main interactive loop if the user did not
+      choose to get an explaination
     \end{enumerate}
-  \item {\bfseries Alternative Flow:}
+  \item {\bfseries Alternative Flow:}\\
+    {\em User chose to have an explaination of the result}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item Trigger the Explain use case
+      \item Go back to main interactive loop after the
+        explaination is done
     \end{enumerate}
-  \item {\bfseries Exception Flow:}
+  \item {\bfseries Exception Flow:} 
+    {\em Database Error}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item Inform the user
+      \item Ask if the user wants to go back to main loop anyway,
+        or just exit\\
+        \indent + Go back to main loop if the user chooses to do
+        so\\
+        \indent + Otherwise, terminate execution
     \end{enumerate}
 \end{itemize}
-\subsubsection{Explain proof result}
+\subsubsection{Extended use case: Explain proof result}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/explain}
+  \caption{Illustration: Explaination of the previous provable
+  Illustration}
+\end{figure}
 \begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
+  \item {\bfseries Description:} Explain the result of the
+    $\alpha-Resolution$ in the Prove use case
+  \item {\bfseries Trigger:} User chose to get an explaination
+  \item {\bfseries Precondition:}\\
+    \indent + Prove use case triggered
+    \indent + Successfully performed $\alpha-Resolution$ in the
+    Prove use case    
+    \indent + The result of $\alpha-Resolution$ is not
+    ``Nothing''
+  \item {\bfseries Postcondition:} The explaination of how the
+    system got to that result is printed
   \item {\bfseries Normal Flow:}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item Get the trace returned by the proving
+        procedure        
+      \item Reconstruct the proof tree from the trace
+      \item Print the tree
+      \item Go back to the main interactive loop  
     \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
+  \item {\bfseries Alternative Flow:} {\em No Alternative Flow}
+  \item {\bfseries Exception Flow:} {\em No Exception Flow}
 \end{itemize}
 %-----------------------------------------------%
 \subsection{Exit}
 \begin{itemize}
-  \item {\bfseries Description:} 
-  \item {\bfseries Trigger:}
-  \item {\bfseries Precondition:} The reasoning system and its
-    dependency is installed
-    
-  \item {\bfseries Postcondition:}
-
+  \item {\bfseries Description:} Terminate the execution of the
+    system
+  \item {\bfseries Trigger:} User chose ``quit'' command from the
+    main interactive loop
+  \item {\bfseries Precondition:} The reasoning system is up and
+    running    
+  \item {\bfseries Postcondition:} The reasoning system's
+    execution is terminated.
   \item {\bfseries Normal Flow:}
     \begin{enumerate}
-      \item 1
-      \item 2
+      \item User chose Exit
+      \item The system terminates.
     \end{enumerate}
-  \item {\bfseries Alternative Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
-  \item {\bfseries Exception Flow:}
-    \begin{enumerate}
-      \item 1
-      \item 2
-    \end{enumerate}
+  \item {\bfseries Alternative Flow:} {\em No Alternative Flow}
+  \item {\bfseries Exception Flow:} {\em No Exception Flow}
 \end{itemize}
-%\subsection 
+\section{Sample result}
+\paragraph{} As a final touch, this section will consider a
+simple example to illustrate the $\alpha-Resolution$ inference
+method as implemented in this reasoning system. The knowledge
+base and the queried proposition are chosen so that there are
+more than one way to prove the proposition with resolution, and
+the confidence value of each proof will be different. 
+\paragraph{} Consider the knowledge base as illustrated below:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/printkb}
+  \caption{Example knowledge base}
+\end{figure}
+\paragraph{} The LSHA as the truth domain used to defined the
+above knowledge base is $AX = \{X, G = {c^{+} = True, c^{-} =
+False}, H = \{More, Very, Possibly, Less\}, \le\}$ \\ where $H^{+} =
+\{More, Very\}, More \le Very$, $H^{-} = \{Possibly, Less\},
+Possibly \le Less$ and the relation matrix is as follow:
+\begin{table}[H]
+  \centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+            Affecting$\backslash$Affected & More & Very & Possibly & Less \\ \hline
+            More                        & +    & +    & -    & -    \\ \hline
+            Very                        & +    & +    & -    & +    \\ \hline
+            Possibly                    & -    & -    & -    & -    \\ \hline
+            Less                        & -    & -    & -    & -    \\ \hline
+\end{tabular}
+\caption {A hedges relation matrix}
+\end{table}
+\paragraph{} The {\bfseries Goal} we want to prove here is:\\ G = 
+\(\text{``Spratly Islands is Vietnam's undisputable
+territory''}^{\text{Very More True}}\). To prove G, we will
+perform resolution on $S = KB \cup \neg{G}$. In the beginning, every
+clause in S will be given maximum confidence value.
+\paragraph{} At the first glance, the easiest resolution proof
+would be this one:
+\begin{enumerate}
+  \item (G, Maxt)\\
+    `resolvedWith`\\
+    (``China's territorial claims have always been
+    controversial''$^{\text{Less False}}$ OR ``Spratly Islands is Vietname's
+    undisputable territory''$^{\text{Possibly True}}$, Maxt)\\
+    \indent  => (``China's territorial claims have always been
+    controversial''$^{\text{Less False}}$, Possibly True) (1)
+  \item (1)\\
+    `resolvedWith`\\
+    (``China's territorial claims have always been
+    controversial''$^{\text{Very False}}$ )\\
+    \indent => (NULL, Less True)
+\end{enumerate}
+\paragraph{} So the confidence of this proof is Less True. However let's
+consider the $\alpha-Resolution$ proof of the system:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{part2/scrshot/explain}
+  \caption{$\alpha-Resolution$ proof for the example}
+\end{figure}
 \end{document}
+\paragraph{} The confidence for this proof is More True, which is
+obviously better than Less True. And in fact as discussed in the
+Theoretical Background chapter, $\alpha-Resolution$ always
+derives the proof with the highest confidence.

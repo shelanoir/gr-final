@@ -48,9 +48,9 @@ of the vague concept's meaning w.r.t. other vague concepts.\\
 \indent \(\implies\) The canonical representation of any linguistic value w.r.t. another value is unique.	\\
 \indent {\bfseries Theorem 2:} Let \(x = h_n \cdots h_1 u\) and \(y = k_m \cdots k_1 u\) be two arbitrary
 	canonical representations of x and y w.r.t. u, respectively. Then there exists an index
-	\(j \le min{n, m} + 1\) such that \(h_i = k_i, \forall i < j\), and\\
-\indent (1) \(x < y \iff h_j x_j < k_j x_j , where x_j = h_j-1 \cdots h_1 u\)\\
-\indent (2) \(x = y \iff n = m = j and h_j x_j = k_j x_j\)\\
+        \(j \le min(n, m) + 1\) such that \(h_i = k_i, \forall i < j\), and\\
+\indent (1) \(x < y \iff h_j x_j < k_j x_j ,\: where \: x_j = h_j-1 \cdots h_1 u\)\\
+\indent (2) \(x = y \iff n = m = j\: and\: h_j x_j = k_j x_j\)\\
 \indent (3) x and y are incomparable \(\iff h_j x_j\) and \(k_j x_j\) are incomparable\\
 \paragraph {Sign function:} The function $Sign: X \rightarrow
 \{-1,0,1\}$ is a mapping defined recursively as follows, where
@@ -65,9 +65,9 @@ hedges h and h' are arbitrary and $c \in c^{-}, c^{+}$
                 = c)
         \item $Sign(h'hx) = 0$ if $h'hx = hx$
 \end{enumerate}
-\paragraph{Theorem 2:} For any h and x, if $Sign(hx) = 1$ then
+\paragraph{Theorem 3:} For any h and x, if $Sign(hx) = 1$ then
 $hx > x$, and if $Sign(hx) = -1$ then $hx < x$
-\indent \(\implies\) Theorem 1 and 2 provide us the mean to
+\indent \(\implies\) Theorem 2 and 3 provide us the mean to
 compare two linguistic values in a hedge 
 algebra.
 \paragraph{Example:} Assuming we have $AX = \{X, G =
@@ -82,6 +82,10 @@ False, True, V and itself. Then:
                 means V L True $\le$ L True, while $Sign(L L
                 True) = -Sign(L True) = 1$, which means L L True
                 $\ge$ L True. Thus, V L True $\le$ L L True
+        \item Because V L True $\le$ L L True, we also have $\sigma1$ 
+                V L True $\le$ $\sigma2$ L L True, where
+                $\sigma1$ and $sigma2$ are arbitrary hedges
+                string. 
 \end{enumerate}
 
 
@@ -105,8 +109,8 @@ If \(H \neq {\o}, H(c^+), H(c^-)\) are infinite then \(inf(c^+) = sup(c^-) = W, 
 
 From that we define:
 \begin{itemize}
-\item Let \(x = \sigma c, \sigma \in H^*, c \in \{c^+, c^-\}. y \text{is the negation of x, denoted}
-	y = -x \text{ if } y = \sigma c', \{c,c'\} = \{c^+, c^-\}. -0 = 1, -1 = 0, -W = W\).
+\item Let \(x = \sigma c, \sigma \in H^*, c \in \{c^+, c^-\}. y\: \text{is the negation of x, denoted}
+	y = -x\: \text{ if }\: y = \sigma c', \{c,c'\} = \{c^+, c^-\}. -0 = 1, -1 = 0, -W = W\).
 \item \(x,y \in \bar X\) then \(x \wedge y = min(x,y), x \vee y = max(x,y)\)
 \end{itemize}
 
@@ -199,7 +203,7 @@ a disjunction of literal, is said to be in {\em Conjunctive
 normal form}, or CNF for short. CNF is important, because as we
 shall see in the next section, a knowledge base must be represented in CNF to be able
 to use resolution on it.
-{\bfseries Theorem:} Every formula in our propositional logic is logically equivalent to a CNF
+\paragraph{Theorem} Every formula in our propositional logic is logically equivalent to a CNF
 formula.\\
 The following algorithm can be applied to transform any
 propositional sentence into its CNF:\\\\
