@@ -14,7 +14,7 @@ new formula \(G\). An inference rule is sound if it satisfies logical consequenc
 To be useful, aside from being sound, an inference rule also should be complete, meaning\\
 it deduce every formula that is a logical consequence of the original set of formulae.\\
 \paragraph{Confidence value:}
-In fuzzy logic, inference rules are only approxiamtely true, so formulae derived by them must be
+In fuzzy logic, inference rules are only approximately true, so formulae derived by them must be
 taken with a {\em confidence value}. A formula F with \(\alpha\) confidence is denoted by \(F_\alpha\).\\
 
 Clauses in the initial knowledge base are given with some confidence value. The confidence of formulae
@@ -47,7 +47,8 @@ to achieve this was discussed in the previous section.\\
  To prove that a goal clause G entails the knowledge base KB, e.g \(KB \models G\), we can instead prove
 that \(KB \cup \neg G\) is unsatisfiable.\\\\
 \indent {\em Input: S = \(KB \cup \neg G\)}\\
-\indent {\em Output: S is unsatisfiable or not}\\\\
+\indent {\em Output: A confidence value if S in unsatisfiable,
+Nothing otherwise}\\\\
 \indent{\bfseries BEGIN}\\
 \indent If (S contains NULL) thenn return true;\\
 \indent Foreach (clause C1 in S)\\
@@ -76,7 +77,7 @@ I:\{A = c\}, we have:
 \[
    \begin{cases}
            T_{I:\{A = c\}}(A^{a} \vee A^{b}) &=  T_{I:\{A =
-           c\}}(A^{a \vee b})  \text{ if } c > W \\
+           c\}}(A^{a \vee b})  \text{ if } c \ge W \\
 
            T_{I:\{A = c\}}(A^{a} \vee A^{b}) &=  T_{I:\{A =
            c\}}(A^{a \wedge b}) \text{ if } c < W
@@ -84,7 +85,7 @@ I:\{A = c\}, we have:
 \]
 
 \subsubsection{Proof:}
-{\bfseries Case 1: a, b > W, c > W}
+{\bfseries Case 1: a, b > W, c $\ge$ W}
 \begin{align*}
         T_{I:\{A = c\}}(A^{a} \vee A^{b}) &= T_{I:\{A =
                  c\}}(A^{a}) \vee T_{I:\{A = c\}}(A^{b}) \\
@@ -103,7 +104,7 @@ I:\{A = c\}, we have:
                  &= T_{I:\{A = c\}}(A^{a \wedge b}) \\
 \end{align*}
 
-{\bfseries Case 3: a, b < W, c > W}
+{\bfseries Case 3: a, b < W, c $\ge$ W}
 \begin{align*}
         T_{I:\{A = c\}}(A^{a} \vee A^{b}) 
                  &= T_{I:\{A = c\}}(A^{a}) \vee T_{I:\{A = c\}}(A^{b}) \\
@@ -124,7 +125,7 @@ I:\{A = c\}, we have:
                  &= T_{I:\{A = c\}}(A^{a \wedge b}) \\
 \end{align*}
 
-{\bfseries Case 5: a > W, b < W, c > W}
+{\bfseries Case 5: a > W, b < W, c $\ge$ W}
 \begin{align*}
         T_{I:\{A = c\}}(A^{a} \vee A^{b}) 
                  &= T_{I:\{A = c\}}(A^{a}) \vee T_{I:\{A = c\}}(A^{b}) \\
@@ -164,13 +165,16 @@ I:\{A = c\}, we have:
 $\implies$ \(
    \begin{cases}
            T_{I:\{A = c\}}(A^{a} \vee A^{b}) &=  T_{I:\{A =
-           c\}}(A^{a \vee b})  \text{ if } c > W \\
+           c\}}(A^{a \vee b})  \text{ if } c \ge W \\
 
            T_{I:\{A = c\}}(A^{a} \vee A^{b}) &=  T_{I:\{A =
            c\}}(A^{a \wedge b}) \text{ if } c < W
    \end{cases} 
    \) (q.e.d).
-
+\paragraph{} From this theorem, it's easy to see that for any
+disjunction of literals $A_{n} = A^{a1} \vee A^{a2} ... \vee A^{a_{n}}$,
+I(A) = b, if b $\ge$ W then $A_{n} = a^{max(a1,..a_{n})}$, otherwise
+$A_{n} = a^{min(a1,..a_{n})}$
 \subsection{Confidence value in HA-based logic}
 By the definition of resolution, we can see for the two clauses to be able to resolve, \(b_1\) and 
 \(b_2\) must be on different side w.r.t. W, and the bigger their difference, the more reliable the 
@@ -194,31 +198,6 @@ them to get a confidence value that represent both the ``false'' and ``true'' va
 \begin{align*}
 	{\alpha}_3 = \wedge({\alpha}_1, {\alpha}_2, (b_1 \vee b_2), \neg(b_1 \wedge b_2))
 \end{align*}
-\subsubsection{Confidence using the semantic difference of two value}
-In the previous methods, we only consider how right (or wrong) \(b_1\) and \(b_2\) are to determine
-the confidence of our inference. To better evaluate the confidence value, we must be able to express
-the difference between \(b_1\) and \(b_2\), as the more different they are the more certain our 
-inference is and vice versa.\\
-\\
-Assuming we have the indexing function \(h: X \to N\) mapping a linguistic value to the number of 
-elements in X that is no larger than it. Notice that the number of elements in X must be finite then, 
-which means the maximum length of hedge strings in HA must also be finite.\\ 
-\\
-The difference between to linguistic value x1 and x2 is then defined by:
-\begin{align*}
-	dif(x1,x2) = x, \text{ where: } h(x) = h(x1) - h(x2)\\
-\end{align*}
-The confidence value is:
-\begin{align*}
-	\alpha_3 = \wedge(\alpha_1,\alpha_2,dif(b_1,b_2))
-\end{align*}
-\\
-This definition of confidence value is the most accurate out of the four. It clearly states the relation
-between two ``opposing'' value \(b_1\) and \(b_2\). The only downside is that we have to limit the 
-length of hedge strings to be able to calculate the difference. It is shown that there is an 
-isomorphism between the set X of a LHA {X,G,H,\(\le\)} and the interval [0..1]. If we had a computable
-method to map each value in X to a value in [0..1], we could calculate the difference even more 
-accurately, and more importantly, without limitting the maximum length of hedge strings.\\
 
 \paragraph{}From here on out, we would implicitly mean the third method
 (combining max and min) when talking about confidence calculating
@@ -251,59 +230,14 @@ S derives the null clause.\\
 \indent Proof: Let S1 be the set of all clauses after doing resolution on S. We have \(null \in S1\), so
 S1 is unsatisfiable. According to Lemma 1, S must also be unsatisfiable (q.e.d).\\
 \subsection{Proof of Completeness}
-Proof of completeness means that we have to prove: \(KB \models G \implies KB {\vdash}_{resolution} G\). To put in English: the resolution method can derive G from KB if G is satisfiable in every model of 
+\paragraph{} Proof of completeness means that we have to prove: \(KB \models G \implies KB {\vdash}_{resolution} G\). To put in English: the resolution method can derive G from KB if G is satisfiable in every model of 
 KB. We can instead prove that if \(S = KB \cup \neg G\) is unsatisfiable,  doing resolution on
 S derives the null clause.\\
-
-\subsubsection{Proof by model constructing}
-\paragraph{Well-founded ordering:} a binary relation \(<\) on a set S is a well-founded ordering if:
-\begin{itemize}
-	\item non-reflexive
-	\item transitive
-	\item there exists a least element in (S, \(<\))
-\end{itemize}
-\paragraph{Transfinite induction:} if \(B \subset A, A\) is well-founded ordered by \(<\), for every a in A:\\
-\(({\forall c \in A, c < a} \subset B \implies a \in B) \implies A = B\)\\
-\(\to\) if for some property P, \(\forall y < x, P(y) = true \implies P(x) = true\), then P is true for 
-every x in A.
-We can see transfinite induction is a generalization of the more familiar induction on the set of integer.\\
-\paragraph{Proof of completeness}:\\
-{\bfseries Lemma 2: If S is the transitive closure of resolution and S doesn't contain NULL, then S is
-satisfiable\\}
-Proof: We will prove this by constructing a model of S. Let I be an arbitrary interpretation of S, J be
-our being constructed model of S.\\
-Let False(I) be the set of false clauses of S under I, FalseL(I) the set of false literals of S under I.
-Similarly we have True(I) and TrueL(I).
-Let Y be the minimal cover of False(I), meaning that for all C in False(I), it contains at least one 
-literal in Y, and Y is the smallest possible set satisfies that. It is trivial to see that for each 
-literal in C there exists a clause C in False(I) that L is the only literal that both C and Y contain
-(1).\\
-
-Let's construct J such that:
-\begin{itemize}
-	\item \(T_J(L) \ge W \) if \(L \in Y\)
-	\item \(T_J(L) \ge W \) if \(L \in TrueL(I)\) and there is no complement of L in Y
-	\item \(T_J(L) < W\) otherwise
-\end{itemize}
-
-Now let \(<_1\) be a binary relation on S such that:\\
-\(R <_1 C \iff R\) is a resolution of \(C\) and \(C_0 \in False(I)\). \(<_1\) is a 
-well-founded ordering.\\
-\\
-We have to prove that: for all C in S, \(\forall (R <_1 C, T_J(R) \ge W) \to T_J(C) \ge W\).\\
-If C is in False(I) then we always have \(T_J(C) \ge W\). If C is in True(I), assume that 
-\(T_J(C) < W, \to \forall\) literals in C \(\in FalseL(J)\). C in True(I) so there exists a
-literal \(L \in TrueL(I) \cap FalseL(J), \to \exists \text{the complement} L_1\) of L. \(L_1 \in
-FalseL(I) \cap TrueL(J) \equiv Y\). From (1), we have C' being the clause in False(I) that has only 
-\(L_1\) as a literal from Y \(\to L_1\) is the only true literal in C'. Doing resolution on C and C',
-we have \(R1 = (C - L) \cup (C' - L1) \to R1\) contains only false literal under J. We also have R1
-\(<_1\) C, so R1 must be true under J. So the assumption that \(T_J(C) < W\) is false, and \(T_J(C) 
-\ge W\). Applying transfinite induction, we have \(T_J(C) \ge W\) in S. (q.e.d)\\
-
-Applying Lemma 2, we have that for an unsatisfiable set of clauses S, resolution will always derive the
-null clause. So the resolution inference rule is complete. (q.e.d)\\\\
-\subsubsection{Proof by semantic tree}
-\paragraph{Semantic tree: } Given a set of clauses S containing n symbols \(A_1..A_n\). The semantic
+\paragraph{} First, let's consider some definitions that will be
+used in the proof:
+\subsubsection{Definitions:}
+\paragraph{}{\em Semantic tree:} Given a set of clauses S
+containing n symbols \(A_1..A_n\), The semantic
 tree if S is a n-depth complete binary tree, each level corresponding to a literal. Children branches
 of a node is labeled \(A_i < W\) and \(A_i > W\). 
 \(\implies\) The semantic tree represents every interpretation possible for S, with each branch from
@@ -320,19 +254,20 @@ root to a leaf corresponding to an interpretation. The trivial case of \(A_i = W
 \caption{Semantic tree example}
 \end{figure}
 \\
-\paragraph{Failure node: } A node is a failure node if there exists an interpretation corresponding to
+\paragraph{}{\em Failure node:} A node is a failure node if there exists an interpretation corresponding to
 the path from root to that node that S is false under that interpretation, and S is not false at 
 any ancestor of that node.\\
-\paragraph{Failure tree: } If every path from root to leaf contains a failure node, cut off the children
+\paragraph{}{\em Failure tree:} If every path from root to leaf contains a failure node, cut off the children
 of those failure nodes, we get a failure tree.\\
-\paragraph{Inference node: } A node in failure tree where both of its children are failure node.\\
+\paragraph{}{\em Inference node:} A node in failure tree where both of its children are failure node.\\
 \(\implies\) S is unsatisfiable if and only if it has a failure tree (1)\\
 \(\implies\) There exists at least one inference node in a failure tree (2)\\
 If a failure tree contains only one node, then it is false for the null interpretation.
 Only null clause is false for null interpretation, so if S's failure tree contains only one node, S
 must contain the null clause (3)\\
 %
-\paragraph{Proof of completeness: } Now we are going to prove that if \(S = KB \cup \neg G\) is 
+\subsubsection{Proof of completeness}
+\paragraph{} Now we are going to prove that if \(S = KB \cup \neg G\) is 
 unsatisfiable, resolution will derive the null clause from S. \\
 According to (1), S has a failure tree. According to 2, S has at least one inference node.\\
 \begin{figure}[H]
@@ -344,35 +279,76 @@ According to (1), S has a failure tree. According to 2, S has at least one infer
 \caption{An inference node i derived during inferencing by
 resolution on S}
 \end{figure}
+\paragraph{}
 Let i be an inference node with j and k are its children. Because S is false at j where \(A_m < W\),
 there must be a false clause C1 in S in the form \(...\vee {A_{m}}^{a1}, a1 > W\) and every other 
 literal in C1 must be false at i. Similarly, there exist a C2 in S that false at k, and it has the form 
 \(\cdots\vee {A_{m}}^{a2}, a2 > W\), every other literal in C2 must also be false at i.
 Doing resolution on C1 and C2, we get C which contains every false literal in C1, C2 but \(A_{m}\).
-Then we have \(S \vee C\)'s failure tree is S's failure tree cutting off j and k.\\
-Repeat this process until there is only one node left. Now we have the transitive closure of resolution
+Then we have \(S \vee C\)'s failure tree is S's failure tree cutting off j and k.
+\paragraph{} Repeat this process until there is only one node left. Now we have the transitive closure of resolution
 on S, and this closure contain the null clause according to (3) (q.e.d).
-\\
+
 \subsection{$\alpha-Resolution$ stragety in HA-based logic}
-\paragraph{} Since different proofs of the same clause may have different reliabilities, 
-it is natural to study how to design a resolution procedure with the best reliability. 
-Below we present such a procedure.
+\subsubsection{A problem with resolution} 
+\paragraph{} When reasoning with the resolution rule, there might
+be several different derivation sequences that can prove the same
+goal. However, these derivation sequences most likely don't have
+the same confidence value. It is preferable to follow the one
+with the highest confidence value, since this confidence value
+expresses how {\em reliable} the proof using resolution is.
+However, using resolution as it is will not guarantee that. To
+illustrate this point, let's consider an example:
+
+\paragraph{Example}
+$AX = \{X, G = {c^{+} = True, c^{-} =
+False}, H = \{More, Very, Possibly, Less\}, \le\}$ \\ where
+$H^{+} =
+\{More, Very\}, More \le Very$, $H^{-} = \{Possibly, Less\},
+Possibly \le Less$ and the relation matrix is as follow:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|c|c|}
+      \hline
+                  Affecting$\backslash$Affected & More & Very &
+      Possibly & Less \\ \hline
+                  More                        & +    & +    & -
+      & -    \\ \hline
+                  Very                        & +    & +    & -
+      & +    \\ \hline
+                  Possibly                    & -    & -    & -
+      & -    \\ \hline
+                  Less                        & -    & -    & -
+      & -    \\ \hline
+    \end{tabular}
+    \caption {A hedges relation matrix}
+  \end{table}
+
+\paragraph{} Since different derivationa of the same conjunction of clauses may have different
+confidence value, it is natural to study how to design a resolution 
+procedure that will always follow the derivation best confidence. The section below present
+$\alpha-Resolution$, a resolution strategy that can achieve
+precisely that.
+\subsubsection{Resolution with $\alpha-strategy$ derivation}
 \paragraph{} 
-We say that a set of clauses S is saturated iff for every fuzzy linguistic reso-
-lution inference with premises in S, the conclusion of this inference is a variant
-with smaller or equal reliability of some clauses in S. That is for every fuzzy
+We say that a set of clauses S is saturated iff for every fuzzy
+linguistic resolution inference with premises in S, the
+conclusion of this inference is a variant with smaller or equal
+reliability of some clauses in S. That is for every fuzzy
 linguistic resolution inference:\\
 \[\indent \frac{(C1, \alpha1), (C2, \alpha2)}{(C,\alpha)}
 \]
 \indent there is some clause \((C',\alpha') \in \) S such that \(\alpha' \ge \alpha\).
 \paragraph{} 
 We introduce a resolution strategy, called $\alpha$-strategy, which guarantees that
-the resolution proof of each clause has the maximal reliability. An $\alpha$-strategy
+the resolution proof of each clause has the maximal confidence
+value. An $\alpha$-strategy
 derivation is a sequence of the form $S_{0},\ldots,S_{i},\ldots$, where
 \begin{itemize} 
-	\item each Si is a set of clauses with reliability, and
+	\item each Si is a set of clauses with confidence, and
 	\item  \(S_{i+1}\) is obtained by adding the conclusion of a fuzzy 
-	linguistic resolution inference with premises with maximal reliabilities 
+	linguistic resolution inference with premises with
+        maximal confidences 
 	from Si , that is \(S_{i+1} = Si \cup \{(C, \alpha)\}\), 
 	where (C, $\alpha$) is the conclusion of the fuzzy linguistic resolution inference  
 	\(\frac{(C1 , \alpha1), (C2 , \alpha2)}	{(C, \alpha)}\)
@@ -382,15 +358,26 @@ derivation is a sequence of the form $S_{0},\ldots,S_{i},\ldots$, where
 			$\alpha_{1}' > \alpha_{1}$ and $\alpha_{2}' > \alpha_{2}$ , or
 
 		\item $S_{i+1}$ is obtained by removing a variant with smaller 
-			reliability, that is $S_{i+1} = S_{i} \setminus \{(C, \alpha)\}$ 
+			confidence, that is $S_{i+1} = S_{i} \setminus \{(C, \alpha)\}$ 
 			where $(C, \alpha) \in S_{i}$ and there is some
 			$(C, \alpha') \in S_{i}$ such that $\alpha < \alpha'$.
 \end{itemize}
 \paragraph{} 
-{\bfseries The limit of a derivation $S_{0},\ldots,S_{i},\ldots$:} 
+\paragraph{The limit of a derivation $S_{0},\ldots,S_{i},\ldots$:} 
 $S_{\infty} = \underset{i \ge 0}{\cup} \underset{j \ge i}{\cap}S_{j}$
-\\
-
+\paragraph{} This obscure looking definition of the limit of a
+derivation is just actually meant to say that, for a set to be the
+limit of an $\alpha-strategy$ derivation sequence iff the result
+of another $\alpha-strategy$ derivation step on it will not have
+any new clause, and basically is just the same set. In other
+words, the set is saturated
+\paragraph{} The intuition behind $\alpha-Resolution$ is that if
+at any derivation step, you try to only keep the version with highest
+confidence of each clauses, when it eventually reaches
+saturation, each of the clauses in the limit will have the
+highest possible confidence it can get from the premise. The
+next section will deal with the formalization for this intuition.
+\subsubsection{Soundness and Completeness of $\alpha-Resolution$}
 \paragraph{} The proof of completeness for $\alpha-Resolution$ is a direct
 consequence of the proof of completeness for normal resolution
 using proof tree, since $\alpha-Resolution$ still has the 

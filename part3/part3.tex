@@ -1,6 +1,98 @@
 \documentclass[../gr-final.tex]{subfiles}
 \begin{document}
 \part{Conclusion}
-
-\subfile{part3/chap1}
+\chapter{Conclusion}
+This chapter marks the end of the graduation thesis ``
+Implementation of an automated reasoning system on fuzzy
+propositional logic with Linear Symmetrical Hedge algebra as its
+truth domain''. The following sections will summarize the thesis,
+discuss its limitations, possible improvements and future
+direction.
+\section{Summarization of the thesis}
+\paragraph{} This thesis has summarized the theory of hedge
+algebra and the propositional logic based on it, studied the
+$\alpha-Resolution$ method and applied it to design and implement
+an automated reasoning system. The thesis has achieved its
+objectives:
+\begin{itemize}
+        \item Studied hedge algebra and Linear Symmetrical Hedge Algebra,
+                and investigated the propositional logic with
+                LSHA being its truth domain
+        \item Researched the resolution method on fuzzy
+                propositional logic based on LSHA, its new
+                progress $\alpha-Resolution$ and the details of
+                implementing them.
+        \item The main objective of this thesis, an automated
+                reasoning system on fuzzy propositional logic
+                based on LSHA using $\alpha-Resolution$, was 
+                successfully designed and implemented     
+\end{itemize}
+\paragraph{} That being said, the thesis has achieved its end.
+However there are still many limitations, which will be discussed
+in the next section.
+\section{Limitations}
+The main shortcomings of this thesis including:
+\paragraph{The system's limitations:}
+\begin{itemize}
+        \item {\bfseries Performance:} This system is not a high-performanced
+                one, for the lack of time to invest on
+                optimization, and mostly because resolution on
+                propositional logic has never been a
+                high-performance method of automated reasoning.
+        \item {\bfseries User Interface:} The system is not exactly
+                user-friendly in this regard. Simple and
+                essential actions like adding or removing a
+                clause are all rather too cumbersome to be useful
+        \item {\bfseries Scalability:} Since the performance is not that high
+                to begin with, this system is best suit to only
+                small to medium knowledge base. This is also not
+                very ``scalable'' in the sense of expressiveness,
+                because propositional logic can't quantify over other objects 
+                so this system can only express so much with its
+                logic.                
+\end{itemize}
+\paragraph{Theoretical research's limitation}
+\begin{itemize}
+        \item The first limitation of this thesis lies with the flaw 
+                of performing resolution with
+                $\alpha-Resolution$ is that, the ``confidence''
+                value as computed is not really that reliable.
+                For instance, suppose we have A1 = $A^{\text{Very
+                Very Very True}}$,
+                A2 = $A^{\text{More True}}$ and A3 = $A^{True}$, with Very
+                and More are both positive, and Very $\ge$ More.
+                Now assume we would like to prove A1 and A3 using
+                resolution, 
+                knowing that A is really More True. Give A2
+                maximum confidence and do the usual resolution,
+                we will discover that A3 would have the
+                confidence of True, while A1 would have the
+                confidence of More True. Which is not really
+                convincing, since A3 should be much closer to the
+                truth (A2) than A1 is.
+        \item Resolution on fuzzy logic based on LSHA, and $\alpha-Resolution$ 
+                in particular, only computes the confidence value
+                of the proof, while in LSHA there are possible
+                ways to computes a truth value for a
+                proposition.
+        \item Another limitation of this thesis is that, this
+                thesis didn't consider the much more expressive
+                first-order logic, and only studied
+                propositiontal logic. This also led to practical
+                problems as discussed above.
+\end{itemize}
+\section{Future direction}
+\paragraph{} The limitations discussed above however make several
+points for plausible future direction:
+\begin{itemize}
+        \item Finding new ways to improve resolution on
+                propositional logic based on LSHA. 
+        \item Considering possible application of
+                $\alpha-Resolution$ to other variations of hedge
+                algebra.
+        \item Investigating possible improvement for
+                $\alpha-Resolution$ and resolution in general for
+                other kinds logic, based on other kinds of hedge
+                algebra               
+\end{itemize}
 \end{document}

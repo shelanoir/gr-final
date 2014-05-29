@@ -33,7 +33,7 @@ variables} and {\em linguistic hedges}
 \subsection{Linguistic variables and linguistic hedges}
 \paragraph{} In his exploration for a framework to model human's
 reasoning process, Zadeh introduced the concept of {\em linguistic
-variable}$^{\text {citation needed}}$ in 1975. A linguistic
+variable} in 1975. A linguistic
 variable is a variable whose values are linguistic, e.g tall,
 short, very-tall, approximately-tall, possibly-not-very-short...
 rather than numerical. These linguistic values are mapped to a
@@ -88,8 +88,8 @@ need a way to directly manipulate linguistic terms as
 mathematical objects in their own right, it would be much better
 if we had an algebraic structure that can model linguistic terms
 instead of embedding them into the interval [0..1]. To this end,
-in 1990 Nguyen Cat Ho and Wolfgang Wechler$^{\text{citation
-needed}}$ presented {\em Hedge algebra}, an algebraic structure
+in 1990 Nguyen Cat Ho and Wolfgang Wechler
+presented {\em Hedge algebra}, an algebraic structure
 that provides exactly the aforementioned needs.
 \paragraph{} With hedge algebra, not only we can now directly manipulate
 linguistic values, but also automated reasoning can be performed
@@ -98,7 +98,7 @@ numerical values. This is without a doubt a very powerful approach
 to computationally model the way human reason, and since hedge
 algebra was first presented the researches on automated reasoning
 using hedge algebra as truth domain has been substantial, notably
-in$^{{\text citation and citation needed}}$.
+in.
 \paragraph{}
 Very recently a new and promising reasoning method on a specific
 subclass of hedge algebra called Linear Symmetrical Hedge Algebra
@@ -124,7 +124,9 @@ questions:
         \item Can we apply this to solve any practical problem,
                 or is this just of purely theoretical interest?
 \end{itemize}
-\subsection{Objectives} This thesis seeks to change this situation, by
+\subsection{Objectives}
+\paragraph{Main Objective} This thesis seeks to make some progress
+on the above problem, by
 providing an implementation of an automated reasoning system on
 fuzzy logic with LSHA as its truth domain. In particular,
 the system will use the aforementioned $\alpha-Resolution$ to show that
@@ -132,7 +134,23 @@ this specific method is feasible and effective, and in turn to
 show that automated reasoning with hedge algebra can be feasible
 and effective in general. To make a point of
 applicability, the system will be designed to use in
-knowledge-based systems.
+knowledge-based systems.\\\\
+\paragraph{} To achieve that end, there are some specific smaller
+goals and tasks this thesis must complete:
+\begin{itemize}
+        \item Study hedge algebra, especially Linear
+        Symmetrical Hedge Algebra, and its applications in
+        linguistic logic reasoning. 
+        \item Research the resolution automated reasoning methods for
+        fuzzy propositional logic using Linear Symmetrical Hedge
+        Algebra in particular, and other fuzzy logic in general
+        \item Investigate $\alpha-Resolution$, the recent
+                development on resolution for fuzzy propositional
+                logic based on LSHA.
+        \item And finally, design and implement the automated
+                reasoning system as mentioned in the main
+                objective
+\end{itemize}
 \subsection{Overview of the rest of the thesis}
 Chapter 2 constitutes the foundation of this
 whole thesis, including the theory and intuitions behind hedge

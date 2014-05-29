@@ -130,17 +130,42 @@ way to {\em move} the meaning of arbitrary linguistic value to
 the domain of linguistic truth value. With this, any kind of
 linguistic reasoning can be grounded to reasoning on linguistic
 fuzzy logic with linguistic truth values as its truth domain.
-\section{A propositional logic with truth value domain based on LSA}
+\section{Fuzzy propositional logic with truth value domain based on
+LSHA}
+\paragraph{} In this section, we investigate the syntax and
+semantics of fuzzy propositional logic with LSHA as its truth
+domain. 
+\paragraph{} {\em Syntax} is a collection of rules used for
+constructing, or transforming the symbols and words of a
+language. In constrast, {\em Semantics} is the meaning of that
+language. Syntax and semantics are the most fundamental
+components of any formal language and logic.
 \subsection{Syntax}
-\indent {\bfseries The alphabet of logic} consists of the following classes of symbol:\\
-\indent + Propositional symbols: A,B,C \ldots\\
+\paragraph{} An {\bfseries alphabet} of a logic is the set of
+all symbols that can be used to construct a syntactically valid
+proposition.
+\paragraph{} The alphabet of this logic consists
+ofthe following classes of symbol:\\
+\indent + Atom symbols: A,B,C \ldots\\
 \indent + Linguistic value symbols: a,b,c \ldots\\
 \indent + Constant symbols: 0,1,W\ldots\\
 \indent + Logical connectives:\(\vee,\wedge,\to,\neg\) \ldots\\
 \indent + Auxiliary symbols: ',', '(', ')'\ldots\\ \\
-{\bfseries Literal:} A string \(A^a\), where \(A\) is a propositional symbol and \(a\) is a truth
-value in \(A\)'s domain.\\\\
- {\bfseries Formula:}\\
+\paragraph{} A {\bfseries literal} is an ``atomic'' unit that
+has meaning in a logic. If alphabet symbols are letters, then literals
+are words in the language of logic. For classical logics, for any
+atom A, we have two corresponding literals for
+it: either A or $\neg{\text{A}}$. We can consider it as if we
+annotated the symbol with a truth value, in this case True for
+plain A and False for $\neg{\text{A}}$. We can generalize this
+observation to define a literal for multi-valued logic, such as
+the logic being under consideration.\\
+A string \(A^a\) is called a literal, where
+\(A\) is an atom and \(a\) is a truth value in \(A\)'s domain.
+
+\paragraph{} A {\bfseries formula} is a syntactically legal string of alphabet
+symbols. It is like a meaningful, complete sentence in the language of
+logic. A formula is recursively defined as follows:\\
  \indent + A literal is a formula\\
  \indent + F is a formula then \( (\neg F\)) is also a formula\\
  \indent + F and G are formulae then \( (F\vee G), (F\wedge G), (F \to G)\) are also formulae\\
@@ -148,32 +173,90 @@ value in \(A\)'s domain.\\\\
  \indent ( {\bfseries Precedence of operations:} \(\neg\)  >>  \(\to\)  >>  \(\wedge\)  >>  \(\vee\))\\
 
 \subsection{Semantic}
+\paragraph{} The previous subsection introduced the syntax of the
+language of fuzzy propositional logic based on LSHA. The meaningful
+unit of construct in this language is a formula, which is like a
+declarative statement in natural language. Such sentences refer
+to some ``possible world'' and may have different truth value in
+``this world''. In classical logics, the meaning of a logic 
+formula is defined relative to some abstract world by assigning
+the elements of the language to some abstract structure. And for
+this logic, the structure being used is the linguistic truth value 
+in Linear Symmetrical Hedge Algebra.
 \subsubsection{Interpretation}
-An {\bfseries Interpretation} I:\{A = a1\} of the literal \(A^{a2}\) is the mapping associate the formula
-with a value of the truth value domain.\\
+\paragraph{} An {\bfseries Interpretation} I:\{A = a1\} of the literal
+\(A^{a2}\) is the mapping associate the formula
+with a value of the truth value domain. In other words,
+interpretation is the assignment of truth value to atom
+symbols, from which the truth value of literals and formulae can
+be determined.\\
+To put it simply, this assignment of truth value is analogous to
+putting some logical propositions under consideration in a
+possible world.
+\paragraph{} For instance, considering the proposition ``All cats
+hate dogs''$^{\text{Possibly True}}$. Normally in our world, most
+cats do hate dogs, and this proposition sounds likely to be true.
+However in some alternate reality where every single cat
+loves dogs, this proposition doesn't seem to be right. That is to
+say, the truth value of the proposition ``All cats hate dogs''$^{\text{Possibly True}}$
+depends on the truth value of ``All cats hate dogs''.
 
-{\bfseries Logical connectives' semantics:} let a and b be some linguistic value. Then:\\
+\paragraph{} Let A be an atom, $I:\{A=a1\}$ be an interpretation.
+The truth value of a literal $A^{a2}$ under the interpretation
+$I:\{A = a1\}$ is defined as follows:\\
+\indent + \(T_{I:\{A = a1\}}(A^{a2}) = a1 \wedge a2 \) if a1, a2 \(\ge W\)\\
+\indent + \(T_{I:\{A = a1\}}(A^{a2}) = \neg (a1 \vee a2) \) if a1, a2 \(<\) W\\
+\indent + \(T_{I:\{A = a1\}}(A^{a2}) = \neg a1 \vee a2 \) if a1 \(\ge\) W, a2 \(<\) W\\
+\indent + \(T_{I:\{A = a1\}}(A^{a2}) =  a1 \vee \neg a2 \) if a1 \(<\) W, a2 \(\ge\) W\\
+
+\paragraph{Logical connectives' semantics:} let a and b be some linguistic value. Then:\\
 \indent + \(a \vee b = max(a,b)\)\\
 \indent + \(a \wedge b = min(a,b)\)\\
 \indent + \(\neg a = \text{symmetrical value of } a\)\\
 \indent + \(a \to b = max(\neg a,b)\)\\
-\(\implies \wedge\) and \(\vee\) are G{\"o}del's T-norm and T-conorm.\\
+
 Let T(A) be A's truth value under an arbitrary interpretation.\\
-{\bfseries Truth value of formulae:}\\
+\paragraph{Truth value of formulae:} The truth value of a formula
+under an interpretation T is defined as follow:\\
 \indent + If A is a literal, T(A) is determined by the interpretation\\
 \indent + Let A and B be two formulae:\\
 \indent \indent (1) \(T(A\vee B) = T(A) \vee T(B)\)\\
 \indent \indent (2) \(T(A\wedge B) = T(A) \wedge T(B)\)\\
 \indent \indent (3) \(T(A\to B) = T(A) \to T(B)\)\\
 \indent \indent (4) \(T(A\neg B) = T(A) \neg T(B)\)
-\\\\
-Let \(T_{I:\{A = a1\}}(A^{a2})\) the value of that interpretation. Then:\\
-\indent + \(T_{I:\{A = a1\}}(A^{a2}) = a1 \wedge a2 \) if a1, a2 \(\ge W\)\\
-\indent + \(T_{I:\{A = a1\}}(A^{a2}) = \neg (a1 \vee a2) \) if a1, a2 \(<\) W\\
-\indent + \(T_{I:\{A = a1\}}(A^{a2}) = \neg a1 \vee a2 \) if a1 \(\ge\) W, a2 \(<\) W\\
-\indent + \(T_{I:\{A = a1\}}(A^{a2}) =  a1 \vee \neg a2 \) if a1 \(<\) W, a2 \(\ge\) W\\
-
-\subsubsection{Satisfiable, unsatisfiable, false}
+\paragraph{Properties of conjunction and disjunction operators
+under an interpretation:} let A,B,C be formulae, and I be an
+arbitrary interpretation. Then the following properties hold:
+\begin{itemize}
+\item Commutativity:
+  \begin{itemize}
+    \item $I(A \vee B) \equiv I(B \vee A)$
+    \item $I(A \wedge B) \equiv I(B \wedge A)$
+  \end{itemize}
+\item Associativity:
+  \begin{itemize}
+    \item $I(A \vee (B \vee C)) \equiv I((A \vee B) \vee C)$
+    \item $I(A \wedge (B \wedge C)) \equiv I((A \wedge B) \wedge C)$
+  \end{itemize}
+\item Distributivity:
+  \begin{itemize}
+    \item $I(A \vee (B \wedge C)) \equiv I((A \vee B) \wedge (A \vee
+      C))$
+    \item $I(A \wedge (B \vee C)) \equiv I((A \wedge B) \vee (A \wedge
+      C))$
+  \end{itemize}
+\end{itemize}
+\subsubsection{Satisfiability, unsatisfiability, falsehood and
+tautology}
+\paragraph{} Like it was mentioned above, the act of assigning
+truth value to atoms is analogous to putting a proposition under
+a possible world. For a proposition, it most likely has different truth
+value in different possible worlds. In some world, it may still
+be considered something ``true'', but in some other world, it
+may be something ``false''. Some propositions are always
+``false'' in every world, while some others are always true.
+This brings us to the concepts of
+satisfiability, unsatisfiability, falsehood and tautology.\\\\
 {\bfseries Definition:} Let S be a formula, I be an arbitrary interpretation:\\
 \indent + S is false under I if \(T_I(S) < W\)\\
 \indent + S is unsatisfiable if it is contradicted to every interpretation\\ 
@@ -181,22 +264,49 @@ Let \(T_{I:\{A = a1\}}(A^{a2})\) the value of that interpretation. Then:\\
 \indent + S is a tautology if \(\forall I: T_I(S) \ge W\)\\
 \indent \(\implies)\) Collorary: A formula A is a tautology iff \(\neg\)A is unsatisfiable.
 \subsubsection{Logical equivalences. Functional complete set of logical connectives}
-\indent Two formula A abd V are said to be equivalent (\(A \equiv B\)) if A and B have the same \\
-indent truth value for every interpretation I.\\
-\indent Some well-known logical equivalences:
-\begin{align*}
-+ A \to B \equiv \neg A \vee B\\
-+ A \to B \equiv \neg A \vee B\\
-+ A \to B \equiv \neg A \vee B\\
-+ A \to B \equiv \neg A \vee B\\
-+ A \to B \equiv \neg A \vee B\\
-+ A \to B \equiv \neg A \vee B\\
-+ A \to B \equiv \neg A \vee B\\
-+ A \to B \equiv \neg A \vee B\\
-+ A \to B \equiv \neg A \vee B\\
-\end{align*}
-\indent {\bfseries Functionally complete set of logical connectives} is one which can be used to express all possible logical functions \(f:TV^n \to TV\)\\
-
+\paragraph{} Two formulas A and B are said to be equivalent (\(A \equiv B\)) if A and B have the same \\
+indent truth value for every interpretation I.
+\paragraph{} Let A, B and C be formulae, then the following
+properties hold:
+\begin{itemize}
+\item Idempotency:
+  \begin{itemize}
+    \item $A \vee A \equiv A$
+    \item $A \wedge A \equiv A$
+  \end{itemize}
+\item Implication:
+  \begin{itemize}
+   \item $A \rightarrow B \equiv \neg A \vee B$
+   \item $A \leftrightarrow B \equiv (A \rightarrow B) \wedge (B
+     \rightarrow A)$
+  \end{itemize}
+\item Double negation:
+  \begin{itemize}
+    \item $\neg\neg{A} \equiv A$
+  \end{itemize}
+\item De Morgan:
+  \begin{itemize}
+    \item $\neg{A \vee B} \equiv \neg{A} \wedge \neg{B}$
+    \item $\neg{A \wedge B} \equiv \neg{A} \vee \neg{B}$
+  \end{itemize}
+\item Commutativity:
+  \begin{itemize}
+    \item $A \vee B \equiv B \vee A$
+    \item $A \wedge B \equiv B \wedge A$
+  \end{itemize}
+\item Associativity:
+  \begin{itemize}
+    \item $A \vee (B \vee C) \equiv (A \vee B) \vee C$
+    \item $A \wedge (B \wedge C) \equiv (A \wedge B) \wedge C$
+  \end{itemize}
+\item Distributivity:
+  \begin{itemize}
+    \item $A \vee (B \wedge C) \equiv (A \vee B) \wedge (A \vee
+      C)$
+    \item $A \wedge (B \vee C) \equiv (A \wedge B) \vee (A \wedge
+      C)$
+  \end{itemize}
+\end{itemize}
 \subsubsection{Conjunctive normal form}
 \paragraph{} A formula expressed as a conjunction of formulae, where these formulae are in turn expressed as
 a disjunction of literal, is said to be in {\em Conjunctive
