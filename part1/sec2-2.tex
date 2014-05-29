@@ -300,12 +300,14 @@ expresses how {\em reliable} the proof using resolution is.
 However, using resolution as it is will not guarantee that. To
 illustrate this point, let's consider an example:
 
-\paragraph{Example}
-$AX = \{X, G = {c^{+} = True, c^{-} =
+\paragraph{Example: }
+Let $AX = \{X, G = {c^{+} = True, c^{-} =
 False}, H = \{More, Very, Possibly, Less\}, \le\}$ \\ where
 $H^{+} =
 \{More, Very\}, More \le Very$, $H^{-} = \{Possibly, Less\},
-Possibly \le Less$ and the relation matrix is as follow:
+Possibly \le Less$ be a Linear Symmetrical Hedge Algebra, with
+Maxt and Mint as its maximal and minimal value. The relation matrix between its hedges is
+defined as follows:
 \begin{table}[H]
     \centering
     \begin{tabular}{|l|c|c|c|c|}
@@ -321,9 +323,47 @@ Possibly \le Less$ and the relation matrix is as follow:
                   Less                        & -    & -    & -
       & -    \\ \hline
     \end{tabular}
-    \caption {A hedges relation matrix}
-  \end{table}
-
+    \caption {Relation matrix between hedges}
+\end{table}
+\paragraph{} Let Very, More, Possibly, Less be V, M, P, L for
+short. Consider the following set of clauses:\\
+\begin{enumerate}
+  \item $A^{MFalse} \vee B^{False} \vee C^{VMTrue}$
+  \item $B^{LTrue} \vee C^{PTrue}$
+  \item $A^{PTrue}$
+  \item $B^{VTrue}$
+  \item $C^{VFalse}$
+\end{enumerate}
+\paragraph{} Let's perform resolution on this set of clauses. At
+the beginning, every clause will be given maximal confidence
+value.
+\[
+  \cfrac{ (B^{LTrue} \vee C^{PTrue},Maxt) (A^{MFalse} \vee B^{False} \vee
+  C^{VMTrue}, MaxT)}
+  {\qquad\qquad\qquad\qquad \cfrac{ (A^{MFalse} \vee C^{VMTrue}, LTrue) (A^{PTrue}, Maxt)}
+    {\qquad\qquad\qquad\qquad \cfrac {(C^{VMTrue}, LTrue) (C^{VFalse}, Maxt)}
+      {\qquad\qquad\qquad\qquad (NULL, LTrue)
+        }
+     }
+    }
+\]
+\paragraph{} However, that is not the only derivation for this
+set of clauses:
+\[
+  \cfrac{ (A^{PTrue},Maxt) (A^{MFalse} \vee B^{False} \vee
+  C^{VMTrue}, MaxT)}
+  {\qquad\qquad\qquad\qquad\cfrac{ (B^{False} \vee C^{VMTrue}, PTrue) (B^{VTrue}, Maxt)}
+    {\qquad\qquad\qquad\qquad\cfrac {(C^{VMTrue}, PTrue) (C^{VFalse}, Maxt)}
+      {\qquad\qquad\qquad\qquad(NULL, PTrue)
+        }
+     }
+    }
+\]
+\paragraph{} This derivation however has the confidence value of
+Possibly True, which is higher than Less True. This is in fact
+the highest possible confidence value for this set of clauses,
+but we are not guaranteed to arrive at it if we just use normal
+resolution.
 \paragraph{} Since different derivationa of the same conjunction of clauses may have different
 confidence value, it is natural to study how to design a resolution 
 procedure that will always follow the derivation best confidence. The section below present
