@@ -2,37 +2,90 @@
 \begin{document}
 
 \section{Hedge algebra}
+\subsection{Intuitive properties of linguistic hedges}
+\paragraph{} As discussed in the {\bfseries Introduction}
+section, a linguistic hedge is an unary function that modifies
+the meaning of their argument in a specified, context-dependent
+way. However, this formal definition doesn't shed much insight on
+the concept of linguistic hedges.
+\paragraph{} Linguistic hedges in hedge algebra are originated
+from natural language's hedges, so before investigate further on
+hedge algebra, this section will first discuss about the
+intuitive properties behind linguistic hedges, which are the
+foundation to the formalization of hedge algebra
+\paragraph{} First, let's consider the words Very, More, Less
+and Possibly. Intuitively, when we use Very or More
+as a modifier for another word, e.g. Nice, those words have an
+strengthening effect on the ``argument'', for instance Very Nice
+definitely has more ``niceness'' than Nice. On the other hands,
+words like Approximately, Possibly and Less have a weakening
+effect on the modified word. Possibly Old is kind of lacking in
+``oldness'' than just plain Old. These modifier words are what we
+call linguistic hedges.
+\paragraph{} Also note that many linguistic variables have some
+primary vague concepts, for instance the linguistic variable
+Height has ``Tall'' and ``Short'', the variable Health has
+``Strong'' and ``Weak'', and the variable Truth has ``True'' and
+``False''. We usually think of a primary vague concepts of a
+variable as having ``positive meaning'', like Strong or True, and the other
+as having ``negative meaning''.
+\paragraph{} Intuitively, linguistic hedges seem to have the following properties:
+\begin{enumerate}
+  \item Every hedge either strengthens or weakens the meaning of
+    primary vague concepts, both positive and negative ones. We
+    call the strengthening ones positive hedge, and the weakining
+    ones negative hedge.
+  \item A hedge can also strengthen or weaken the meaning of each
+    others and itself. We can see that Very strengthens Very,
+    More, Less but weakens the meaning of Possibly. If a hedge h
+    strengthens the meaning of a hedge k, we say that h is
+    positive w.r.t. k. If h weakens the meaning of k, we say that
+    h is negative w.r.t. k.
+  \item Also observe that different hedges can strengthen or
+    weaken differently. It's clear that Very Dangerous is more of
+    a threat than More Dangerous, for example.
+  \item And lastly, while hedges can modify a vague concept, it
+    can't inherently change the intuitive meaning of that
+    concept, rather the modified meaning stems from the inherent
+    meaning of the vague concept, and it has something to say about
+    the meaning of the concept it stems from. Possibly True is
+    saying something about True but not about False, and Very
+    Handsome is not saying anything about Ugly, but rather about
+    Handsome.
+\paragraph{} The formalization of hedge algebra, as investigated
+below, is intuitively rooted in those observations.
+\end{enumerate}
 \subsection{Definition}
-{\bfseries Linguistic hedge:} a unary operation on linguistic value, changing the linguistic value's meaning.
-\\
+
 {\bfseries Hedge algebra:} Let \(X\) be a linguistic variable and its domain is \(X = Dom(X)\). A hedge 
 algebra \(AX\) in respect to \(X\) is a 4-tuple \(AX = (X,G,H,\le)\) where G is the set of spanning
 elements, H is the set of hedges and \(\le\) is the sematic ordering relation on X.
 The set G usually has positive, negative and neutral spanning elements. In practice, G usually has only
 positive and negative spanning elements e.g \{True,False\}, \{High, Low\}.\\
 
-A hedge algebra AX satisfies the following  axioms:\\
-{\indent
-	(1) Hedges either increase or decrease the effect of other hedges including itself, and it is 
-then positive or negative w.r.t. the other.\\}
-{\indent
-	(2) If \(u\notin H(v)\) and \(v\notin H(u)\) then \(\forall x\in H(u), x\notin H(v)\) and vice versa. 
+A hedge algebra AX satisfies the following  axioms:
+\begin{enumerate}
+
+        \item Hedges either increase or decrease the effect of other hedges including itself, and it is 
+then positive or negative w.r.t. the other.
+
+        \item If \(u\notin H(v)\) and \(v\notin H(u)\) then \(\forall x\in H(u), x\notin H(v)\) and vice versa. 
 	Furthermore if u and v cannot be compared then so are x,y for all \(x\in H(u), y\in H(v)\).
-}\\
-{\indent
-	(3) \(x \not = hx, x \notin H(hx). h\neq k, hx<kx\) then \(h'hx\le k'kx\forall h,h',k,k'\in
+
+
+        \item \(x \not = hx, x \notin H(hx). h\neq k, hx<kx\) then \(h'hx\le k'kx\forall h,h',k,k'\in
 	H.\) Furthermore, if \(hx \neq kx\) then hx and kx are independent w.r.t. to each other.
-}\\
-{\indent
-	(4) \(u \in v, u \le v\implies u\le hv\) for \(\forall h\) and vice versa.
-}
-\\\\
-(1) is self-explainatory.\\
-(2) means that if two vague concepts are really different, then they form seperated concept categories,
-which means they don't have any common meaning.\\
-(3) means that each hedge has its own meaning and defines its own concept category.\\
-(4) means that a hedge only modifies the vague concept's meaning. It preserves the ordering relation
-of the vague concept's meaning w.r.t. other vague concepts.\\
+
+
+        \item \(u \in v, u \le v\implies u\le hv\) for \(\forall h\) and vice versa.
+\end{enumerate}
+\paragraph{} Those axioms mean that:
+\begin{enumerate}
+        \item The first axiom is self-explainatory.
+        \item The second axiom means that if two vague concepts are really different, then they form seperated concept categories, which means they don't have any common meaning.
+        \item The third one means that each hedge has its own meaning and defines its own concept category.
+        \item The last one means that a hedge only modifies the vague concept's meaning. It preserves the ordering relation of the vague concept's meaning w.r.t. other vague concepts.
+\end{enumerate}
 \subsection{Properties}
 \paragraph {Semantic heredity:} When a hedge affects the meaning of a linguistic value, it only
 	increases or decreases a little bit the meaning of that value. The resulting value inherits
@@ -40,13 +93,13 @@ of the vague concept's meaning w.r.t. other vague concepts.\\
 	if hx \(\le\) kx then H(hx) \(\le\) H(kx). Generally, \(\forall (u,v \in X, 
 	\sigma_1 = h_n..h_1, \sigma_2 = k_m..k_1, h_i,k_j \in H)\), we have:
 	\(u \le v \implies \sigma_1u \le \sigma_2v\)\\
-\paragraph {Theorem 1:} Let AX = (X,G,H,\(\le\)). The following statements hold:\\
+{\bfseries Theorem 1:} Let AX = (X,G,H,\(\le\)). The following statements hold:\\
 \indent (1) If x \(\in\) X is a fixed point of an operation h in H, i.e. hx = x, then it is a fixed
 	 point of the others.\\
 \indent (2) If x = \(h_n \cdots h_1 u\), and there exists an index \(i<n\) such that \(h_i \cdots h_1 u\)        is another representation (canonical) of x w.r.t. u and \(h_j x = x, \forall j\ge i\).\\
 \indent (3) For any \(h, k\in H\), if \(hx\le kx\) and \(h\neq k\) then \(hx< kx\).\\
 \indent \(\implies\) The canonical representation of any linguistic value w.r.t. another value is unique.	\\
-\indent {\bfseries Theorem 2:} Let \(x = h_n \cdots h_1 u\) and \(y = k_m \cdots k_1 u\) be two arbitrary
+{\bfseries Theorem 2:} Let \(x = h_n \cdots h_1 u\) and \(y = k_m \cdots k_1 u\) be two arbitrary
 	canonical representations of x and y w.r.t. u, respectively. Then there exists an index
         \(j \le min(n, m) + 1\) such that \(h_i = k_i, \forall i < j\), and\\
 \indent (1) \(x < y \iff h_j x_j < k_j x_j ,\: where \: x_j = h_j-1 \cdots h_1 u\)\\
@@ -65,7 +118,7 @@ hedges h and h' are arbitrary and $c \in c^{-}, c^{+}$
                 = c)
         \item $Sign(h'hx) = 0$ if $h'hx = hx$
 \end{enumerate}
-\paragraph{Theorem 3:} For any h and x, if $Sign(hx) = 1$ then
+{\bfseries Theorem 3:} For any h and x, if $Sign(hx) = 1$ then
 $hx > x$, and if $Sign(hx) = -1$ then $hx < x$
 \indent \(\implies\) Theorem 2 and 3 provide us the mean to
 compare two linguistic values in a hedge 
@@ -84,7 +137,7 @@ False, True, V and itself. Then:
                 $\ge$ L True. Thus, V L True $\le$ L L True
         \item Because V L True $\le$ L L True, we also have $\sigma1$ 
                 V L True $\le$ $\sigma2$ L L True, where
-                $\sigma1$ and $sigma2$ are arbitrary hedges
+                $\sigma1$ and $\sigma2$ are arbitrary hedges
                 string. 
 \end{enumerate}
 
