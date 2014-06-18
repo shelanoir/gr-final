@@ -18,7 +18,7 @@ and Possibly. Intuitively, when we use Very or More
 as a modifier for another word, e.g. Nice, those words have an
 strengthening effect on the ``argument'', for instance Very Nice
 definitely has more ``niceness'' than Nice. On the other hands,
-words like Approximately, Possibly and Less have a weakening
+words like Possibly and Less have a weakening
 effect on the modified word. Possibly Old is kind of lacking in
 ``oldness'' than just plain Old. These modifier words are what we
 call linguistic hedges.
@@ -63,7 +63,8 @@ elements, H is the set of hedges and \(\le\) is the sematic ordering relation on
 The set G usually has positive, negative and neutral spanning elements. In practice, G usually has only
 positive and negative spanning elements e.g \{True,False\}, \{High, Low\}.\\
 
-A hedge algebra AX satisfies the following  axioms:
+Denote H(x) as the set of all terms generated from the term $x
+\in X$. A hedge algebra AX satisfies the following  axioms:
 \begin{enumerate}
 
         \item Hedges either increase or decrease the effect of other hedges including itself, and it is 
@@ -73,11 +74,12 @@ then positive or negative w.r.t. the other.
 	Furthermore if u and v cannot be compared then so are x,y for all \(x\in H(u), y\in H(v)\).
 
 
-        \item \(x \not = hx, x \notin H(hx). h\neq k, hx<kx\) then \(h'hx\le k'kx\forall h,h',k,k'\in
-	H.\) Furthermore, if \(hx \neq kx\) then hx and kx are independent w.r.t. to each other.
+\item $x \not = hx$ then  $x \notin
+        H(hx)$. If $h\neq k, hx<kx$ then $h'hx\le k'kx\: \forall h,h',k,k'\in
+	H$ and $x \in X$.  Furthermore, if \(hx \neq kx\) then hx and kx are independent w.r.t. to each other.
 
 
-        \item \(u \in v, u \le v\implies u\le hv\) for \(\forall h\) and vice versa.
+\item \(u \in H(v), u \le v\implies u\le hv\) for \(\forall h\) and vice versa.
 \end{enumerate}
 \paragraph{} Those axioms mean that:
 \begin{enumerate}
@@ -102,12 +104,13 @@ then positive or negative w.r.t. the other.
 {\bfseries Theorem 2:} Let \(x = h_n \cdots h_1 u\) and \(y = k_m \cdots k_1 u\) be two arbitrary
 	canonical representations of x and y w.r.t. u, respectively. Then there exists an index
         \(j \le min(n, m) + 1\) such that \(h_i = k_i, \forall i < j\), and\\
-\indent (1) \(x < y \iff h_j x_j < k_j x_j ,\: where \: x_j = h_j-1 \cdots h_1 u\)\\
+        \indent (1) \(x < y \iff h_j x_j < k_j x_j ,\: where \:
+        x_j = h_{j-1} \cdots h_1 u\)\\
 \indent (2) \(x = y \iff n = m = j\: and\: h_j x_j = k_j x_j\)\\
 \indent (3) x and y are incomparable \(\iff h_j x_j\) and \(k_j x_j\) are incomparable\\
 \paragraph {Sign function:} The function $Sign: X \rightarrow
 \{-1,0,1\}$ is a mapping defined recursively as follows, where
-hedges h and h' are arbitrary and $c \in c^{-}, c^{+}$
+hedges h and h' are arbitrary and $c \in \{c^{-}, c^{+}\}$
 \begin{enumerate}
         \item $Sign(c^{-}) = -1, Sign(c^{+}) = 1$,
         \item $Sign(h'hx) = -Sign(hx)$ if $h'hx \neq hx$ and h'
@@ -142,7 +145,7 @@ False, True, V and itself. Then:
 \end{enumerate}
 
 
-\subsection{Linear symmetrical algebra}
+\subsection{Linear Symmetrical Hedge Algebra}
 The spanning set G usually has two comparable linguistic values. For example, we have False \(<\) True
 for truth value. A hedge algebra that has only two primitive linguistic values is called a symmetrical
 hedge algebra. The spanning set is denoted \(G = \{c^-, c^+\}, c^+, c^-\) are positive and negative 
@@ -154,25 +157,28 @@ The set H of hedges can also be partitioned into two seperated subsets \(H^+ = \
 H^-, \le)\) is linear symmetrical iff \(H^+\) and \(H^-\) are linearly ordered. It is easy to see
 that X is also linearly ordered by \(\le\).\\\\
 
-Let I \(\notin\) H be the {\em identity hedge}: \(\forall x \in X, Ix = x\). I is smaller than any other
+Let I \(\notin\) H be the {\em identity hedge}: \(\forall x \in
+X, Ix = x\). This artificial is smaller than any other
 hedge in \(H^+\) and \(H^-\).\\\\
 
 If \(H \neq {\o}, H(c^+), H(c^-)\) are infinite then \(inf(c^+) = sup(c^-) = W, inf(c^-) = 0, sup(c^+) = 1\). W is call the neutral element. We have: \(0<c^-<W<c^+<1\). Denote the linguistic value domain as
 \(\bar X = X \cup \{0,W,1\}\)\\\\
 
+Let $H^{*}$ denote the set of all hedges string generated from H.
 From that we define:
 \begin{itemize}
-\item Let \(x = \sigma c, \sigma \in H^*, c \in \{c^+, c^-\}. y\: \text{is the negation of x, denoted}
+\item Let \(x = \sigma c, \sigma \in H^*, c \in \{c^+, c^-\}.
+        y\:\: \text{is the negation of x, denoted}
 	y = -x\: \text{ if }\: y = \sigma c', \{c,c'\} = \{c^+, c^-\}. -0 = 1, -1 = 0, -W = W\).
 \item \(x,y \in \bar X\) then \(x \wedge y = min(x,y), x \vee y = max(x,y)\)
 \end{itemize}
 
 
 \subsection{Rule of moving hedges}
-\indent (RT1): \(\frac{((P,hu),\sigma <True|False>)} {((P,u),\sigma h<True|False>)}\)
+\indent (RT1): \(\dfrac{((P,hu),\sigma <True|False>)} {((P,u),\sigma h<True|False>)}\)
 \\
 \\
-	(RT2): \(\frac{((P,u),\sigma h<True|False>)} {((P,hu),\sigma <True|False>)}\)
+	(RT2): \(\dfrac{((P,u),\sigma h<True|False>)} {((P,hu),\sigma <True|False>)}\)
 \paragraph{} For example, considering we have the linguistic
 variable Height with value [Short..Tall], assumming `` `Jordan is
 {\em Very Very} {\bf Tall}' is {\bf True}'', we can equivalently
@@ -276,26 +282,26 @@ under an interpretation T is defined as follow:\\
 \indent \indent (1) \(T(A\vee B) = T(A) \vee T(B)\)\\
 \indent \indent (2) \(T(A\wedge B) = T(A) \wedge T(B)\)\\
 \indent \indent (3) \(T(A\to B) = T(A) \to T(B)\)\\
-\indent \indent (4) \(T(A\neg B) = T(A) \neg T(B)\)
+\indent \indent (4) \(T(\neg B) = \neg T(B)\)
 \paragraph{Properties of conjunction and disjunction operators
 under an interpretation:} let A,B,C be formulae, and I be an
 arbitrary interpretation. Then the following properties hold:
 \begin{itemize}
 \item Commutativity:
   \begin{itemize}
-    \item $I(A \vee B) \equiv I(B \vee A)$
-    \item $I(A \wedge B) \equiv I(B \wedge A)$
+    \item $T(A \vee B) \equiv T(B \vee A)$
+    \item $T(A \wedge B) \equiv T(B \wedge A)$
   \end{itemize}
 \item Associativity:
   \begin{itemize}
-    \item $I(A \vee (B \vee C)) \equiv I((A \vee B) \vee C)$
-    \item $I(A \wedge (B \wedge C)) \equiv I((A \wedge B) \wedge C)$
+    \item $T(A \vee (B \vee C)) \equiv T((A \vee B) \vee C)$
+    \item $T(A \wedge (B \wedge C)) \equiv T((A \wedge B) \wedge C)$
   \end{itemize}
 \item Distributivity:
   \begin{itemize}
-    \item $I(A \vee (B \wedge C)) \equiv I((A \vee B) \wedge (A \vee
+    \item $T(A \vee (B \wedge C)) \equiv T((A \vee B) \wedge (A \vee
       C))$
-    \item $I(A \wedge (B \vee C)) \equiv I((A \wedge B) \vee (A \wedge
+    \item $T(A \wedge (B \vee C)) \equiv T((A \wedge B) \vee (A \wedge
       C))$
   \end{itemize}
 \end{itemize}
@@ -316,7 +322,7 @@ satisfiability, unsatisfiability, falsehood and tautology.\\\\
 \indent + S is satisfiable if \(\exists I: T_I(S) \ge W\). I is then called a model of S, denoted \(I \models S\)\\
 \indent + S is a tautology if \(\forall I: T_I(S) \ge W\)\\
 \indent \(\implies\) Collorary: A formula A is a tautology iff \(\neg\)A is unsatisfiable.
-\subsubsection{Logical equivalences. Functional complete set of logical connectives}
+\subsubsection{Logical equivalences}
 \paragraph{} Two formulas A and B are said to be equivalent (\(A \equiv B\)) if A and B have the same \\
 indent truth value for every interpretation I.
 \paragraph{} Let A, B and C be formulae, then the following
@@ -326,6 +332,10 @@ properties hold:
   \begin{itemize}
     \item $A \vee A \equiv A$
     \item $A \wedge A \equiv A$
+  \end{itemize}
+\item Moving negation:
+  \begin{itemize}
+          \item $\neg A^{a} \equiv A^{\neg a}$
   \end{itemize}
 \item Implication:
   \begin{itemize}

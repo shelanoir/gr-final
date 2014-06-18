@@ -50,13 +50,14 @@ that \(KB \cup \neg G\) is unsatisfiable.\\\\
 \indent {\em Output: A confidence value if S in unsatisfiable,
 Nothing otherwise}\\\\
 \indent{\bfseries BEGIN}\\
-\indent If (S contains NULL) thenn return true;\\
+\indent If (S contains NULL) then return Confidence(NULL);\\
 \indent Foreach (clause C1 in S)\\
 \indent \indent Foreach (clause C2 in S)\\
 \indent \indent \indent If (C1 and C2 can be resolved) C3 := resolve(C1,C2);\\
-\indent \indent \indent If (C3 = NULL) return Confidence(C3);\\
-\indent \indent \indent Else Reduce(C3)\\
-\indent \indent \indent \indent (Add C3 to S);\\
+\indent \indent \indent If (C3 = NULL) return Confidence(C3)\\
+\indent \indent \indent \;\; Else if (Reduce(C3) is not in S) Add
+Reduce(C3) to S;\\
+%\indent \indent \indent \indent (Add C3 to S);\\
 \indent If (S does not contain NULL) then return Nothing;\\
 \indent{\bfseries END}
 \paragraph{} Where Confidence(C3) is the confidence value of
